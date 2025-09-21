@@ -23,6 +23,7 @@ public final class Task implements Comparable<Task> {
     //private Clock processorClock;
     
     public Task(String s, double w, double p, double d, double o) {
+        System.out.println("Task - Task(String s, double w, double p, double d, double o)");
         label = s;
         setWCET(w);
         setPeriod(p);
@@ -34,6 +35,14 @@ public final class Task implements Comparable<Task> {
         	responseRatio = (deadline - occurance + wcet)/wcet;
         etVar = 0;
         taskAutomata = new TimedAutomata();
+        System.out.println("\ttaskAutomata: new TimedAutomata()");
+        System.out.println("\tlabel: " + s);
+        System.out.println("\twcet: " + w);
+        System.out.println("\tperiod: " + p);
+        System.out.println("\tdeadline: " + d);
+        System.out.println("\toccurance: " + o);
+        System.out.println("\tresponseRatio: " + responseRatio);
+        System.out.println("\tetVar: " + etVar);
     }
     
     public Task() {
@@ -149,6 +158,7 @@ public final class Task implements Comparable<Task> {
     }
     
     public void setTaskAutomata()   {
+        System.out.println("Task - setTaskAutomata() function: ");
         
         /*final FormulaFactory f = new FormulaFactory();
         final Variable a = f.variable("A");
@@ -159,16 +169,25 @@ public final class Task implements Comparable<Task> {
         //if(!(taskAutomata==null))
         taskAutomata = new TimedAutomata();
         Clock clock = new Clock(0, "clock"+label);
+        Clock y = new Clock(0, "clock-y"+label);
         Clock clockZero = new Clock(0, "clockZero");
         taskAutomata.getClocks().add(clock); //0
+        //Added clock y to keep track of timeslice for preemption...
+        taskAutomata.getClocks().add(y); //1
         
-        
+        System.out.println("Task - setTaskAutomata() function:");
+        System.out.println("\tAdded clock " + clock.toString());
+        System.out.println("\tAdding TimedActions...");
+
         TimedAction enq = new TimedAction("enqueue"+label,0.0, false);   //0
         TimedAction acq = new TimedAction("acquire"+label,0.0,false); //1
         TimedAction pre = new TimedAction("preempt"+label,0.0, false);   //2
         TimedAction abo = new TimedAction("abort"+label,0.0, false);     //3
         TimedAction rel = new TimedAction("release"+label,0.0, false); //4
         
+        System.out.println("Task - setTaskAutomata() function: ");
+        System.out.println("\tAdding timedActions to Task Automata...");
+
         taskAutomata.getTimedAction().add(enq);
         taskAutomata.getTimedAction().add(acq);
         taskAutomata.getTimedAction().add(pre);
@@ -177,42 +196,74 @@ public final class Task implements Comparable<Task> {
         
         //DifferenceBound dbP = new DifferenceBound(period, true);
         //DifferenceBound dbO = new DifferenceBound(occurance, true);
+
+        System.out.println("\tCreating difference bounds...");
         DifferenceBound dbD = new DifferenceBound(deadline, true);
         DifferenceBound dbW = new DifferenceBound(wcet, true);
         DifferenceBound dbDnot = new DifferenceBound(deadline, true);
         DifferenceBound dbWnot = new DifferenceBound(wcet, true);
         
+        System.out.println("Task - setTaskAutomata() function: ");
+        System.out.println("\tCreating ClockConstraints...");
         
         //ClockConstraint ccPeriod = new ClockConstraint("ccInv", taskAutomata.getClocks().get(0), clockZero, dbP);
+        System.out.println("Task - setTaskAutomata() function");
+        System.out.println("\tCreating ccDeadline constraint: x := c <= D");
         ClockConstraint ccDeadline = new ClockConstraint("x:=c<=D", taskAutomata.getClocks().get(0), clockZero, dbD);
+
+        System.out.println("Task - setTaskAutomata() function");
+        System.out.println("\tCreating ccWCET constraint: y := e <= W");
         ClockConstraint ccWCET = new ClockConstraint("y:=e<=W", taskAutomata.getClocks().get(0), clockZero, dbW);
+
+        
+        System.out.println("Task - setTaskAutomata() function");
+        System.out.println("\tCreating notCcDeadline constraint: neg x:=D<c");
         ClockConstraint notCcDeadline = new ClockConstraint("neg x:=D<c", clockZero, taskAutomata.getClocks().get(0), dbDnot);
+
+        System.out.println("Task - setTaskAutomata() function");
+        System.out.println("\tCreating notCcWCET constraint: neg y=D>e");
         ClockConstraint notCcWCET = new ClockConstraint("neg y=D>e", clockZero, taskAutomata.getClocks().get(0), dbWnot);
         //ClockConstraint ccOccurance = new ClockConstraint("c<=0", taskAutomata.getClocks().get(0), clockZero, dbO);
         
+        
+        System.out.println("Task - setTaskAutomata() function: ");
+        System.out.println("\tAdding ClockConstraints just created...");
+
         taskAutomata.getClockConstraint().add(ccDeadline);  	//0
         taskAutomata.getClockConstraint().add(ccWCET);     	 	//1
         taskAutomata.getClockConstraint().add(notCcDeadline);	//2
         taskAutomata.getClockConstraint().add(notCcWCET);   	//3
         //taskAutomata.getClockConstraint().add(ccOccurance);   //4
         
+
         ArrayList<ClockConstraint> invGuard = new ArrayList<>();
         invGuard.add(taskAutomata.getClockConstraint().get(0)); 
+        System.out.println("\tCreating invGuard with the value: " + invGuard.get(0));
         //InvGuard must be wcet guard, for run to have enough available time run  
         
         ArrayList<ClockConstraint> wcetGuard = new ArrayList<>();
         invGuard.add(taskAutomata.getClockConstraint().get(1));
+        System.out.println("\tCreating wcetGuard (not used) with the value: " + invGuard.get(1));
         
         
         ArrayList<ClockConstraint> deadlineGuard = new ArrayList<>();
         deadlineGuard.add(taskAutomata.getClockConstraint().get(0));
+        System.out.println("\tCreating deadlineGuard with the value: " + deadlineGuard.get(0));
         //xyGuard.add(taskAutomata.getClockConstraint().get(2));
         
         ArrayList<ClockConstraint> notDeadlineGuard = new ArrayList<>();
         notDeadlineGuard.add(taskAutomata.getClockConstraint().get(2));
+        System.out.println("\tCreating notDeadlineGuard with the value: " + notDeadlineGuard.get(0));
+
+        ArrayList<ClockConstraint> xyGuard = new ArrayList<>();
+        xyGuard.add(taskAutomata.getClockConstraint().get(0));
+        System.out.println("\tCreating xyGuard with the value: " + deadlineGuard.get(0));
+
         //notXyGuard.add(taskAutomata.getClockConstraint().get(4));
 
+        System.out.println("\tCreating States...");
         
+
         State init= new State("Init"+label, false, false); //c>T
         State inQ= new State("InQ"+label, true, false);
 //        State run= new State("Run"+label, invGuard, false,false);
@@ -220,6 +271,9 @@ public final class Task implements Comparable<Task> {
         State term= new State("Term"+label,false,false);
         State err= new State("Err"+label,false,true);
         
+        System.out.println("Task - setTaskAutomata() function: ");
+        System.out.println("\tAdding states just created to taskAutomata");
+
         
  //       taskAutomata.getStateSet().add(init);   //0 init
         taskAutomata.getStateSet().add(inQ);    //1 inQ 0
@@ -227,10 +281,14 @@ public final class Task implements Comparable<Task> {
         taskAutomata.getStateSet().add(term);   //3 term 2
         taskAutomata.getStateSet().add(err);    //4 error 3
         
-        
         ArrayList<Clock> resets = new ArrayList<>();
         ArrayList<Clock> noResets = new ArrayList<>();
+        //Changed from: resets.add(clock)
         resets.add(clock);
+        resets.add(y);
+
+        System.out.println("\tCreated resets ArrayList<Clock> and added task clock (clock)");
+        System.out.println("\tCreated noResets Arraylist<Clock>");
     
         //(State source, State destination, ArrayList<ClockConstraint> guard, TimedAction act, ArrayList<Clock> resets)
         //enqueue
@@ -242,30 +300,40 @@ public final class Task implements Comparable<Task> {
         Transition inqErr = new Transition(taskAutomata.getStateSet().get(0), taskAutomata.getStateSet().get(3),
                 notDeadlineGuard, taskAutomata.getTimedAction().get(3), noResets);  //1 inq ---- 4 err     //abortQueue //not x
         taskAutomata.getTransitions().add(inqErr);
-        
+        System.out.println("\tCreating Transition inqErr (Abort from queue)");
+        System.out.println("\tAdded Transition inqErr (Abort from queue) to taskAutomata's transitions");
+
         //dequeu to run
         Transition inqRun = new Transition(taskAutomata.getStateSet().get(0), taskAutomata.getStateSet().get(1), //"clock_ti < deadline and e_t(clock_ti) < wect"
                 deadlineGuard, taskAutomata.getTimedAction().get(1), noResets);   //1 inq ---- 2 run  //acq  //x and y
         taskAutomata.getTransitions().add(inqRun);
+        System.out.println("\tCreating Transition inqRun (dequeue)");
+        System.out.println("\tAdded Transition inqRun (dequeue) to taskAutomata's transitions");
         
         //terminated 
         Transition runTerm = new Transition(taskAutomata.getStateSet().get(1), taskAutomata.getStateSet().get(2), 
         		deadlineGuard, taskAutomata.getTimedAction().get(4), noResets);  //2 run --- 3 term   //preem //a and y
         taskAutomata.getTransitions().add(runTerm);
+        System.out.println("\tCreating Transition runTerm (terminated)");
+        System.out.println("\tAdded Transition runTerm (terminated) to taskAutomata's transitions");
         
         //abort from run
         Transition runErr = new Transition(taskAutomata.getStateSet().get(1), taskAutomata.getStateSet().get(3),
         		notDeadlineGuard, taskAutomata.getTimedAction().get(3), noResets);  //term ---- err //abortRunenqTransList.add(enqRun); //not x or not y
         taskAutomata.getTransitions().add(runErr);
+        System.out.println("\tCreating Transition runErr (abort from run)");
+        System.out.println("\tAdded Transition runErr (abort from run) to taskAutomata's transitions");
         
         //preemption
-        Transition runInq = new Transition(taskAutomata.getStateSet().get(2), taskAutomata.getStateSet().get(1),
-               xyGuard, taskAutomata.getTimedAction().get(2), noResets);  //run --- inQ     //rel //x and y
+        Transition runInq = new Transition(taskAutomata.getStateSet().get(1), taskAutomata.getStateSet().get(0),
+               xyGuard, taskAutomata.getTimedAction().get(2), resets);  //run --- inQ     //rel //x and y
         taskAutomata.getTransitions().add(runInq);
-        
-        Transition termInit = new Transition(taskAutomata.getStateSet().get(3), taskAutomata.getStateSet().get(0), 
-               xyGuard, taskAutomata.getAlphabetSet().get(5), delay2);     //preem //a and y
-       taskAutomata.getTransitions().add(runTerm);
+        System.out.println("\tCreating Transition runInq (preempt from run)");
+        System.out.println("\tAdded Transition runErr (preempt from run) to taskAutomata's transitions");
+
+    //     Transition termInit = new Transition(taskAutomata.getStateSet().get(3), taskAutomata.getStateSet().get(0), 
+    //            xyGuard, taskAutomata.getAlphabetSet().get(5), delay2);     //preem //a and y
+    //    taskAutomata.getTransitions().add(runTerm);
       
     }
     

@@ -23,6 +23,9 @@ public class TMVC {
         //pathRun = new ArrayList<>();
         //abstractPathRun = new ArrayList<>();
         pathRunZone = new ArrayList<>();
+        System.out.println("TMVC - TMVC() function:");
+        System.out.println("\ttimeline: " + timeline);
+        System.out.println("\tpathrunzone: " + pathRunZone);
     }
     
     

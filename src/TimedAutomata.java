@@ -34,8 +34,6 @@ public class TimedAutomata {
         //stateQueue = q;
         inUse = false;
     }
-
-    
     
     public TimedAutomata(TimedAutomata other)  {
         stateSet = new ArrayList<>();
@@ -57,6 +55,9 @@ public class TimedAutomata {
     }
     
     public TimedAutomata()  {
+        System.out.println("TimedAutomata - TimedAutomata() function");
+        System.out.println("\tTA created!");
+
         stateSet = new ArrayList<>();
         alphabet = new ArrayList<>();
         clocks = new ArrayList<>();
@@ -968,6 +969,8 @@ public class TimedAutomata {
     //} 
     
      public ArrayList<Clock> getClocks()  {
+        System.out.println("TimedAutomata: getClocks() function: ");
+        System.out.println("\treturn clocks");
         return clocks;
     }
      
@@ -1000,6 +1003,44 @@ public class TimedAutomata {
     //Find start state
     public ArrayList<String> findFinalStatesIndices()  {
         return null;
+    }
+
+    @Override 
+    public String toString() {
+        // private final ArrayList<State> stateSet;
+        // private ArrayList<Clock> clocks;
+        // private final ArrayList<ClockConstraint> acc; //set of atomic clock constraints in guard or state invariant
+        // private final ArrayList<TimedAction> alphabet;
+        // private final ArrayList<Transition> transitions;
+        // private boolean inUse;
+
+        String output = "States:\n\tLabel\tIsInit\tIsFinal\tInvariant\n";
+        for (State s : stateSet) {
+            output += s.toString();
+        }
+
+        output += "Clocks:\nLabel\tValue\n";
+        for (Clock c : clocks) {
+            output += c.toString();
+        }
+
+        output += "Clock Constraints:\n";
+        for (ClockConstraint cc : acc) {
+            output += cc.toString();
+        }
+
+        output += "TimedActions:\nSymbol\tElapse\tCommand\n";
+        for (TimedAction ta : alphabet) {
+            output += ta.toString();
+        }
+
+        output += "Transitions:\nSource\tAction\tGuardChecked\tDest\n";
+        for (Transition t : transitions) {
+            output += t.toString();
+        }
+
+        output += "Automata in use: " + inUse;
+        return output;
     }
     
 }

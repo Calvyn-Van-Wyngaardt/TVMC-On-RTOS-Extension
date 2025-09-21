@@ -1,7 +1,9 @@
 public class Main {
     public static void main(String[] args) {
-        Vertex[] v = new Vertex[1];
-        v[0] = new Vertex();
+        Vertex[] v = new Vertex[2];
+        v[0] = new Vertex(5);
+        v[1] = new Vertex(3);
+        
 
         Edge[] e = new Edge[1];
         e[0] = new Edge();

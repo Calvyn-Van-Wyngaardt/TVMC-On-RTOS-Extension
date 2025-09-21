@@ -12,11 +12,17 @@ public class Clock {
     private String label; 
     
     public Clock(double c, String l)  {
+        System.out.println("Clock(double c, String l) function: ");
+        System.out.println("\tClock created with c = " + c + " & label = " + l);
+
         clock = c;
         label = l;  
     }
     
     public Clock()  {
+        System.out.println("Clock() function: ");
+        System.out.println("\tClock created!");
+
         clock = 0.0;
         label = "";  
     }

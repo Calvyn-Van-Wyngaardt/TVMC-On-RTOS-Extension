@@ -17,13 +17,21 @@ public class DifferenceBound {
     }
     
     public DifferenceBound(double d, boolean b )    {
+        System.out.println("DifferenceBound - DifferenceBound(double d, boolean b) function");
         bound = d;
         lessEqualTo = b;
+        System.out.println("\tDifferenceBound created:");
+        System.out.println("\t\tbound: " + d);
+        System.out.println("\t\tlessEqualTo" + b);
     }
     
     public DifferenceBound(DifferenceBound other )    {
+        System.out.println("DifferenceBound - DifferenceBound(DifferenceBound other) function");
         bound = other.bound;
         lessEqualTo = other.lessEqualTo;
+        System.out.println("\tBound: " + bound);
+        System.out.println("\tlessEqualTo: " + lessEqualTo);
+        
     }
     
     public double getBound()    {

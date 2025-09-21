@@ -18,6 +18,8 @@ public class ClockConstraint  {
     //private Variable logicVar;
     
     public ClockConstraint(String l,Clock c, Clock c2, DifferenceBound dbound) {
+        System.out.println("ClockConstraint - ClockConstraint(String l,Clock c, Clock c2, DifferenceBound dbound) function:");
+        System.out.println("\tLabel: " + l);
         label = l;
         setClocks(c,c2,dbound);
         
@@ -46,6 +48,7 @@ public class ClockConstraint  {
     }
     
     public void setClocks(Clock x, Clock y, DifferenceBound dbound)    {
+        System.out.println("ClockConstraint - setClocks(Clock x, Clock y, DifferenceBound dbound) function");
         /*if(dbound.getBound()<0) {
             clock = y;
             clock2 = x;
@@ -55,6 +58,9 @@ public class ClockConstraint  {
         } else {*/
             clock = x;
             clock2 = y;
+            System.out.println("\tClock 1 set: " + x);
+            System.out.println("\tClock 2 set: " + y);
+            
             db = new DifferenceBound(dbound);
         //}
     }

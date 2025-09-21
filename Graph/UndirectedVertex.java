@@ -1,20 +1,24 @@
 public class UndirectedVertex extends Vertex {
-    private Integer[] periodSet;
+    private int periodValue;
+    private int saturation;
     
     public UndirectedVertex() {
         
     }
 
     public UndirectedVertex(int val) {
-        value = val;
+        setValue(val);
     }
 
     public UndirectedVertex(UndirectedVertex v) {
-        value = v.getValue();
+        setValue(v.getValue());
     }
 
-    public UndirectedVertex(Integer[] p) {
-        periodSet = new Integer[p.length];
-        System.arraycopy(p, 0, periodSet, 0, p.length);
+    public UndirectedVertex(Integer p) {
+        periodValue = p;
+    }
+
+    public int getPeriodValue() {
+        return periodValue;
     }
 }

@@ -1,16 +1,22 @@
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Stack;
 
 public class UndirectedGraph extends Graph {
     // The value of h in this class can be obtained by Graph.getValue()
+    private int h;
     private UndirectedVertex[] vertices;
+    private Integer[] startingPoints;
+    private Map<Integer, Integer> remainderLookup;
 
-    public UndirectedGraph() {
+    public UndirectedGraph(int h) {
         Integer[] periodValues = getPeriodValues();           // Call to parent class containing period values
         vertices = new UndirectedVertex[periodValues.length];
         for (int i = 0; i < periodValues.length; i++) {
-            vertices[i] = new UndirectedVertex(periodValues);
+            vertices[i] = new UndirectedVertex(periodValues[i]);
         }
+        remainderLookup = new HashMap<>();
     }
 
     // TODO: For each Graph G_h, use h colors.
@@ -57,7 +63,12 @@ public class UndirectedGraph extends Graph {
         
         // TODO: Check this for efficiency
         for (int i = 0; i < periodValues.length; i++) {
-            this.vertices[i] = new UndirectedVertex(periodValues);
+            this.vertices[i] = new UndirectedVertex(periodValues[i]);
         }
+    }
+
+    public void colourGraph() {
+        //Number of colours allowed for G_h is h
+        
     }
 }

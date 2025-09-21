@@ -11,11 +11,9 @@
 //import be.uantwerpen.idlab.cobra.tasksetgenerator.synthetictaskgenerator.SetsGenerator;
 //import be.uantwerpen.idlab.cobra.tasksetgenerator.taskcreator.TaskCreator;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.time.Instant;
 import java.util.*;
-import java.io.*;
 
 
 
@@ -34,9 +32,6 @@ public class Main {
     
     
     public static void main(String[] args) throws IOException {
-        //for(int j=1; j<1;j=j+1)   {  //j is number of tasks.
-        //    for(int i=0;i<1;i++)   { //i is number of attempts
-        //    	for(int m = 1; m<2;m++)	{ //m was the number assigned to sched policy
          		int i=1, j=2; //m=1;   		
         		int l = j;
         		
@@ -88,15 +83,18 @@ public class Main {
         		//taskGen.setLabel(label+"-"+policyId);
                 TaskGenerator taskGen; 
                 String label; 
+				// Randomly generated taskset
                 if(mode==1)	{
         			System.out.println("Enter the taskset size: ");  
             		int tsSize = scan.nextInt();
             		label = new String(j+"-"+tsSize+"-"+policyId);
             		taskGen = new TaskGenerator(label, tsSize, 0.8, tsSize*5); //TaskGenerator(int setSize, double utilize, int _seed)
             		taskGen.generateTaskSet(j*5,j,j-4); //l=j //generateTaskSet(double periodmax, double periodmin, double periodStep)
-            	//String label = new String(j+"-"+i+"-"+policyId);
+										// (2*5,2,-2);
+					//String label = new String(j+"-"+i+"-"+policyId);
             	//taskGen.taskSetSort(policyId);
                 //System.out.println();
+				// Load taskset from a file
         		} else if(mode==2)	{
         			System.out.println();
         			System.out.println("Choose the file containing the taskset: "); 
@@ -111,13 +109,23 @@ public class Main {
         			
 					System.out.println();
         			label = filename;//new String(filename);
+					// Capped at 5 tasks?
+					System.out.println("Main - main() function");
+					System.out.println("\tCreating new TaskGenerator");
         			taskGen = new TaskGenerator(filename, 0.8, i*5);
         			//taskGen.readTaskSet(filename);
         		}
         		else 
         			return;
+				
+				System.out.println("Main - main() function");
+				System.out.println("\tSorting task set...");
         		
         		taskGen.taskSetSort(policyId);
+
+				System.out.println("Main - main() function");
+				System.out.println("\tPrinting task sort...");
+
         		taskGen.print(); 
         		
         //		System.out.println();
@@ -141,21 +149,31 @@ public class Main {
                     System.out.println("Output File Creation Error Occurred: Main class.");
                 }
             	
-                
+                System.out.println("Main - main() function");
+				System.out.println("\tCreating queueAbstractor...");
                 
                 QueueAbstractor qa = new QueueAbstractor(iterationTasks,true,taskGen, procSize); 
                 //QueueAbstractor qa = new QueueAbstractor(k,m,taskGen); 
 //            	QueueAbstractor qa = new QueueAbstractor(k,true,taskGen); //FIFO - True, PriorityQ- False
 //            	qa.generateProcessorSet(procSize);
+				System.out.println("Main - main() function");
             	long startTime = Instant.now().toEpochMilli();
             	boolean result = qa.queueAbstraction();
             	long endTime = Instant.now().toEpochMilli();
             	long timeElapsed = endTime - startTime;
+				System.out.println("\tStart Time: " + startTime);
+				System.out.println("\tResult: " + result);
+				System.out.println("\tendTime: " + endTime);
+				System.out.println("\ttimeElapsed: " + timeElapsed);
             //long minutes = (timeElapsed / 1000) / 60;
             //long seconds = (timeElapsed / 1000);// % 60;
             //qa.writeOnPath(" "+minutes+"m"+seconds+"s\n", "filename.txt");
+				System.out.println("Main - main() function");
+				System.out.println("\tWriting on Path to the QueueAbstractor");
+
             	QueueAbstractor.writeOnPath(" "+timeElapsed+"s\n", "Output"+label+".txt");
             	System.out.println();
+				System.out.println("Main - main() function");
                 System.out.println("Program Terminate");
                 
                 scan.close();

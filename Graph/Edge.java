@@ -3,7 +3,8 @@ public class Edge {
     Vertex v2;
 
     public Edge() {
-
+        v1 = new Vertex();
+        v2 = new Vertex();
     }
 
     public Edge(Vertex v1, Vertex v2) {

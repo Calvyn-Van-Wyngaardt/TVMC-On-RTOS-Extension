@@ -14,9 +14,14 @@ public class TimedAction {
     private boolean command;
     
     public TimedAction(String action, Double e, boolean trigger) {
+        System.out.println("TimedAction - TimedAction(String action, Double e, boolean trigger) function:");
         symbol = action;    
         elapse = e;
         command = trigger;
+        System.out.println("\tNew TimedAction created:");
+        System.out.println("\t\tSymbol: " + action);
+        System.out.println("\t\tElapse: " + e);
+        System.out.println("\t\tCommand (can take it): " + trigger);
     }
     
     public TimedAction() {

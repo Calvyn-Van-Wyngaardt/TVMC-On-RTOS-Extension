@@ -29,10 +29,16 @@ public class State {
     }
     
     public State(String name, Boolean init, Boolean isfinal){//,Task t){
+        System.out.println("State - State(String name, Boolean init, Boolean isfinal) function:");
         label = name;
         invariant = new ArrayList<>();
         isInitial = init;
         isFinal = isfinal;
+        System.out.println("\tlabel: " + label);
+        System.out.println("\tisInitial: " + init);
+        System.out.println("\tisFinal: " + isFinal);
+        System.out.println("\tinvariant: empty ArrayList<>()");
+
     }
     
     public State(){

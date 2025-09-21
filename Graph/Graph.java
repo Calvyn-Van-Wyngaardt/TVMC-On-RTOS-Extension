@@ -9,7 +9,10 @@ public class Graph {
 
     public Graph() {
         vertices = new Vertex[1];
+        vertices[0] = new Vertex();
         H = new Stack<>();
+        periodValues = new Integer[1];
+        periodValues[0] = 0;
     }
     
     public Graph(Vertex[] vertices, Edge[] edges, Integer[] periodSet) {

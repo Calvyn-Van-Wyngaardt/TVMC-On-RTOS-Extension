@@ -7,14 +7,14 @@ public class DirectedVertex extends Vertex {
     }
 
     public DirectedVertex(int val) {
-        value = val;
-        G_h = new UndirectedGraph();
+        setValue(val);
+        G_h = new UndirectedGraph(val);
         G_h.initializeEdges();
         G_h.initializeVertices();
     }
 
     public DirectedVertex(DirectedVertex v) {
-        value = v.getValue();
+        setValue(v.getValue());
     }
 
     public int getRemainder() {

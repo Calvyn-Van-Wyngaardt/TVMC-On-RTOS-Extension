@@ -1,11 +1,9 @@
 
 
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.File;  // Import the File class
-import java.util.Scanner; // Import the Scanner class to read text files
-
-import java.io.UnsupportedEncodingException;
+import java.io.PrintWriter;  // Import the File class
+import java.io.UnsupportedEncodingException; // Import the Scanner class to read text files
 import java.util.*;
 
 
@@ -25,8 +23,12 @@ public class TaskGenerator {
 	}
 	
 	public TaskGenerator(String filename, double utilize, int _seed) {
+        System.out.println("TaskGenerator - TaskGenerator(String filename, double utilize, int _seed) function: ");
+
 		label = filename;
         taskSet = new ArrayList<>();
+        System.out.println("\tfileName: " + label);
+        System.out.println("\ttaskSet: empty");
         readTaskSet(filename);
         numberOfTasks = taskSet.size();
         utilization = utilize;
@@ -49,16 +51,26 @@ public class TaskGenerator {
         
         //Bini Enrico - Biasing Effects in Schedulability Measures
         private List<Double> uFitting()    {
+            System.out.println("uFitting function:\n");
             List<Double> vectorU = new ArrayList<>();
             vectorU.add(0.0);
             double upLimit = utilization;
+            System.out.println("upLimit: " + upLimit);
             //System.out.println("Task UTE: "+ upLimit);
             Random random = new Random(seed);
             for(int i=1; i<numberOfTasks-1;i++)    {
                 double randUte = random.nextDouble()*upLimit;
+                System.out.println("\t\tRandUTE Generated: " + randUte);
                 vectorU.add(randUte);
                 upLimit = upLimit-vectorU.get(i);
+                System.out.println("\t\tupLimit Changed to: " + upLimit + "\n");
             }
+
+            System.out.println("Printing vectorU:");
+            for (double d : vectorU) {
+                System.out.println("\t" + d);
+            }
+
             vectorU.add(upLimit);
             return vectorU;
         }
@@ -88,21 +100,30 @@ public class TaskGenerator {
         }
         
         public void readTaskSet(String fileName)	{
-             
+            System.out.println("TaskGenerator - readTaskSet(String fileName) function");
         	try {
                 File myObj = new File("../tasksetInput/" + fileName);
 
-        	      Scanner myReader = new Scanner(myObj);
-        	      while (myReader.hasNextLine()) {
-        	        String data = myReader.nextLine();
+                Scanner myReader = new Scanner(myObj);
+                while (myReader.hasNextLine()) {
+                    String data = myReader.nextLine();
         	        
         	        String[] splited = data.trim().split("\\s+");
         	        //Task ts = new Task(splited[0], Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3]), 0); 
         	        //int i = Integer.parseInt(splited[0]);
+                    System.out.println("\tCreating new task...");
+
         	        Task ts = new Task(splited[0], Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3]), 0); 
         	        //Task t = new Task("T"+i,wcet,period, deadline,occurance); //, occurance);   Task(String s, double w, double p, double d)
+                    
+                    System.out.println("TaskGenerator - readTaskSet(String fileName) function");
+                    System.out.println("\tSetting Task Automata...");
+
                     ts.setTaskAutomata();
                     taskSet.add(ts);
+
+                    System.out.println("TaskGenerator - readTaskSet(String fileName) function");
+                    System.out.println("\t Added new task to taskSet...");
         	        
         	        //System.out.println(ts.getLabel()+" WCET "+ts.getWCET()+" DEADL"+ts.getDeadline());
         	        
@@ -114,16 +135,15 @@ public class TaskGenerator {
         	    }
         }
         
-	//generateTaskset(double minPeriod, double maxPeriod, double stepPeriod, double minLoad, double maxLoad, double stepLoad, int numberTasks, int seed)
         public void generateTaskSet(double periodmax, double periodmin, double periodStep) throws FileNotFoundException, UnsupportedEncodingException    {        	
-//        	PrintWriter writer = new PrintWriter("ExpNo"+label+".txt", "UTF-8");
-        	        	
             int currentLoad = 0;
             int i=0;
             List<Double> taskUtils;
             taskUtils = uFitting(); //(int numTask, double utilization, int seed)
-            //for(Double t: taskUtils)
-            //	System.out.println("Task UTE: "+ t.toString());
+
+            System.out.println("generateTaskSet function:");
+            int whileLoopIteration = 0;
+
             while(currentLoad < utilization && i < numberOfTasks)    {
                 double period = (int)(Math.round((Math.random()*(periodmax/periodStep-periodmin/periodStep)+periodmin/periodStep))*periodStep);
                 double wcet = Math.round(taskUtils.get(i)*period)+1;
@@ -132,13 +152,24 @@ public class TaskGenerator {
                 //double occurance = 0;
                 double deadline = Math.round(Math.random()*(period-wcet) + wcet);//(period-wcet)*Math.random()*range)+wcet;
                 //deadline = period = 100;
-                                
+                System.out.println("\t(" + whileLoopIteration + ") While currentLoad (" + currentLoad + ")  < utilization ( " + utilization + ") && i (" + i + ") < numberOfTasks" + numberOfTasks + ")");
+                System.out.println("\t\tPeriod: " + period);
+                System.out.println("\t\twcet: " + wcet);
+                System.out.println("\t\toccurance: " + occurance);
+                System.out.println("\t\tdeadline: " + deadline);
+                whileLoopIteration += 1;
+
                 if(currentLoad + (wcet/period) <= 1){
+                    System.out.println("\t\t=== New Task Created ===");
                     currentLoad = (int) (currentLoad + (wcet/period));
                     Task t = new Task("T"+i,wcet,period, deadline,occurance); //, occurance);   Task(String s, double w, double p, double d)
+                    System.out.println("\t\tCurrentLoad: " + currentLoad);
+                    System.out.println(t.toString());
                     t.setTaskAutomata();
                     taskSet.add(t);
                     i=i+1;
+                    System.out.println("TaskGenerator - generateTaskSet(double periodmax, double periodmin, double periodStep) function");
+                    System.out.println("\tAdded new task to taskSet");
                 }
                 
             }
@@ -177,7 +208,8 @@ public class TaskGenerator {
         }   
         
         public void taskSetSort(int t)		{
-        	
+        	System.out.println("TaskGenerator - taskSetSort(int t) function");
+
         	PrintWriter writer = null;
 			try {
 				writer = new PrintWriter("STTTExpNo"+label+".txt", "UTF-8");
@@ -219,6 +251,7 @@ public class TaskGenerator {
             	writer.println(ti.toString());
             }
             writer.close();
+            System.out.println("\tWrote to output file...");
         }
         
         

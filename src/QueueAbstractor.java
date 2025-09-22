@@ -255,14 +255,14 @@ public final class QueueAbstractor {
             //System.out.print(iteration+" - "+NTA.getTransitions().size()+" | ");
             if(threeValue==0)  {
             	printCounterExample();
-            	writeOnPath(iteration + ") Not Sched\n","Output"+label+".txt");
+            	writeOnPath("\nAborted on iteration: " + iteration + "\tResult: Not Schedulable\n","Output"+label+".txt");
                 return false;
             }
             //System.out.println("Highest Clock Value: "+ abstractZn);
             //updateConcreteQueue(concreteTaskQueue, abstractTaskQueue);
             
         }
-        writeOnPath(iteration + ") Sched\n", "Output"+label+".txt");
+        writeOnPath("\nFinished on iteration: " + iteration + "\tResult: Schedulable\n", "Output"+label+".txt");
         //System.out.println("Highest Clock Value : "+ abstractZn);
         
         //System.out.println();

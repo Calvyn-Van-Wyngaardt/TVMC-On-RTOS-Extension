@@ -171,7 +171,7 @@ public class Main {
 				System.out.println("Main - main() function");
 				System.out.println("\tWriting on Path to the QueueAbstractor");
 
-            	QueueAbstractor.writeOnPath(" "+timeElapsed+"s\n", "Output"+label+".txt");
+            	QueueAbstractor.writeOnPath("\nTime elapsed: " + timeElapsed + "ms\n", "Output"+label+".txt");
             	System.out.println();
 				System.out.println("Main - main() function");
                 System.out.println("Program Terminate");

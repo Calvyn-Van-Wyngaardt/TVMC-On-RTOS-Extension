@@ -226,24 +226,40 @@ public class TaskGenerator {
     			public int compare(Object o1, Object o2) {
                 	Task oA = (Task) o1;
                 	Task oB = (Task) o2;
-                	if(t==0)  	{	
+
+                    // System.out.println("  Enter 1 - First Come First Serve Queue: ");
+                    // System.out.println("  Enter 2 - Earliest Deadline First Queue: ");
+                    // System.out.println("  Enter 3 - Longest Remaining Time First Queue: ");
+                    // System.out.println("  Enter 4 - Highest Response Ration Next Queue: ");
+                    // System.out.println("  Enter 5 - Round Robin (Preemptive): ");
+                    // System.out.println("  Enter 6 - Fixed Priority (Preemptive): ");
+                    System.out.println("TaskGenerator - taskSetSort(int t)");
+                    System.out.println("\tt Value = " + t);
+
+                	if(t==1)  	{	
 //                		System.out.println("First Come First Serve Queue: ");           	
                 		return oA.getOccurance() < oB.getOccurance() ? -1 : 1;
                 	}
-                	else if (t==1) 	{	
+                	else if (t==2) 	{	
 //                		System.out.println("Shortest Deadline Time First: ");
                 		return oA.getDeadline() < oB.getDeadline() ? -1 : 1;
                 	}
-                	else if (t==2) 	{	
+                	else if (t==3) 	{	
 //                		System.out.println("Longest Remaining Time First: ");
                 		return oA.getWCET() > oB.getWCET() ? -1 : 1;
                 	}
-                	else if (t==3)		{	
+                	else if (t==4)		{	
 //                		System.out.println("Highest Response Ration Next: ");
                 		return oA.getResponseRatio() < oB.getResponseRatio() ? -1 : 1;
                 	}
-                	else
-                		return oA.getOccurance() < oB.getOccurance() ? -1 : 1;
+                	else if (t==5) {
+                		System.out.println("\tRound Robin sorting...");
+                        return oA.getOccurance() < oB.getOccurance() ? -1 : 1;
+                        // Keep value 't' as is...
+                		// System.out.println("TaskGenerator - taskSetSort(int t)");
+                    } else {
+                        return oA.getOccurance() < oB.getOccurance() ? -1 : 1;
+                    }
     			}
             });
             

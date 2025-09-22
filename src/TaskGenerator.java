@@ -236,29 +236,31 @@ public class TaskGenerator {
                     System.out.println("TaskGenerator - taskSetSort(int t)");
                     System.out.println("\tt Value = " + t);
 
-                	if(t==1)  	{	
-//                		System.out.println("First Come First Serve Queue: ");           	
-                		return oA.getOccurance() < oB.getOccurance() ? -1 : 1;
-                	}
-                	else if (t==2) 	{	
-//                		System.out.println("Shortest Deadline Time First: ");
-                		return oA.getDeadline() < oB.getDeadline() ? -1 : 1;
-                	}
-                	else if (t==3) 	{	
-//                		System.out.println("Longest Remaining Time First: ");
-                		return oA.getWCET() > oB.getWCET() ? -1 : 1;
-                	}
-                	else if (t==4)		{	
-//                		System.out.println("Highest Response Ration Next: ");
-                		return oA.getResponseRatio() < oB.getResponseRatio() ? -1 : 1;
-                	}
-                	else if (t==5) {
-                		System.out.println("\tRound Robin sorting...");
-                        return oA.getOccurance() < oB.getOccurance() ? -1 : 1;
-                        // Keep value 't' as is...
-                		// System.out.println("TaskGenerator - taskSetSort(int t)");
-                    } else {
-                        return oA.getOccurance() < oB.getOccurance() ? -1 : 1;
+                    switch (t) {
+                        case 1: {
+                            System.out.println("\tFirst Come First Serve Queue: ");           	
+                            return oA.getOccurance() < oB.getOccurance() ? -1 : 1;
+                        }
+                        case 2:  {
+               		        System.out.println("\tShortest Deadline Time First: ");
+                            return oA.getDeadline() < oB.getDeadline() ? -1 : 1;
+                        }
+                        case 3: {
+               		        System.out.println("\tLongest Remaining Time First: ");
+                            return oA.getWCET() > oB.getWCET() ? -1 : 1;
+                        }
+                        case 4:  {
+                            System.out.println("\tHighest Response Ration Next: ");
+                            return oA.getResponseRatio() < oB.getResponseRatio() ? -1 : 1;
+                        }
+                        case 5:  {
+                            System.out.println("\tRound Robin sorting...");
+                            return oA.getOccurance() < oB.getOccurance() ? -1 : 1;
+                        }
+                        default: {
+                            System.out.println("\tDefault Scheduling...");
+                            return oA.getOccurance() < oB.getOccurance() ? -1 : 1;
+                        }
                     }
     			}
             });

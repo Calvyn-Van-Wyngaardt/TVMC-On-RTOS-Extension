@@ -44,6 +44,8 @@ public class TMVC {
         wait.add(readZone);
 //        int m = abstractQ.size();
 //        double dbmValue = readZone.getZone().getDBM()[0][1].getBound();
+//        System.out.println(readZone.getZoneLocation().toString()+ "BEFORE LOOP State");
+//    	System.out.println("WAIT SIZE Queue Size: "+ wait.size());
         while(!wait.isEmpty())    {
         	readZone = wait.remove(0); //get (l;D) from Waiting
 //        	System.out.println();      	
@@ -59,16 +61,19 @@ public class TMVC {
 //        		System.out.println("REDUCED ABSTRACT QUEUE:");
 //        		m = abstractQ.size();
 //        	} 
-        	
+
+//        	System.out.println(readZone.getZoneLocation().toString()+ " CURRENT State");	
 //        	System.out.println("WAIT SIZE Queue Size: "+ wait.size());
-        	if (!readZone.getZoneLocation().getLabel().contains("Err") 
+
+            if (readZone.getZoneLocation().getLabel().contains("Err") 
 //        		&& dbmValue < readZone.getZone().getDBM()[0][1].getBound() 
-        		&& readZone.getZone().getDBM()[0][0].getBound() < 0 	 
-        		)	{ 
+        		|| readZone.getZone().getDBM()[0][0].getBound() < 0 	 
+        		)	{
+        		
 //        		System.out.println("Iteration Ends - Return 0");
 //        		System.out.println("At State: "+readZone.getZoneLocation().getLabel()
 //        				+ " Zone Validity: "+ readZone.getZone().getDBM()[0][0].getBound() );
-//        		System.out.println(readZone.getZoneLocation().toString());
+        		System.out.println(readZone.getZoneLocation().toString()+ "State With Err");
         		return 0;
         	}
  //       	dbmValue = readZone.getZone().getDBM()[0][1].getBound();
@@ -76,9 +81,11 @@ public class TMVC {
            
         	boolean y = true;
             for(StateZone x : passed)  //Some old zones are size 2 and new zone is size 1?
-                if(!readZone.getZone().relation(x.getZone()) && readZone.getZoneLocation().equals(x.getZoneLocation()) )    //if (! pathRunZone_i.getZoneCc().subset(currentZone.getZoneCc()))
+                if(!readZone.getZone().relation(x.getZone()) || readZone.getZoneLocation().equals(x.getZoneLocation()) )    //if (! pathRunZone_i.getZoneCc().subset(currentZone.getZoneCc()))
                     y = false;
+            y= true; //ADDED LINE FOR TEST 
             
+//            System.out.println("State BEFORE Y:"+ readZone.getZoneLocation().toString());
 //            System.out.println("RELATION: "+y);
             
             if(y)   {
@@ -90,9 +97,11 @@ public class TMVC {
  
                 ArrayList<Transition> outTrans = nta.getOutTransition(abstractQ, readZone, 1);
 //                System.out.println("Out Transition Size: "+ outTrans.size());
-                
+                //nta.print();
+//                System.out.println();
+
                 for(Transition t:outTrans)  {
-//                	System.out.println(t .toString());	
+ //               	System.out.println("Trans t: "+t .toString());	
                 	StateZone sZ = new StateZone(readZone);
                 	
  //               	System.out.println("ZONE BEFORE CLOCK UPDATE: "+ t.getTimedAction().getElapse()
@@ -112,21 +121,20 @@ public class TMVC {
                     if(t.getDestinationState().getLabel().contains("Pause"))   {
                     //if(sZ.getZoneLocation().getLabel().contains("Pause"))   {
                         paused.add(sZ);
-                        //return 1;  //Shall we??
+                        //return 1;
                     }
                     
-                    else //if(!readZone.equals(sZ))
-                    {  	
+                    // else //if(!readZone.equals(sZ))
+                    // {  	
 //                    	System.out.println("Transition with WAIT.ADD Zone: ");
 //                    	System.out.println(t.toString());
                         wait.add(sZ); 
-                    }
+                    // }
  
                 }
             }
        }
         //abstractQ.clear();
-      //  System.out.println("MC Iteration Ends - Return 1");
        return 1;
     }
     

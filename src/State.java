@@ -69,7 +69,7 @@ public class State {
             return false; 
         }
         State o = (State) obj;
-        return label.equals(o.label) && Objects.equals(isFinal, o.isFinal) && Objects.equals(isInitial, o.isInitial);
+        return label.equals(o.label); //&& Objects.equals(isFinal, o.isFinal) && Objects.equals(isInitial, o.isInitial);
     }
 
     @Override

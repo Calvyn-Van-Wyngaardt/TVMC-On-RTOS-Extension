@@ -200,6 +200,10 @@ public final class QueueAbstractor {
             iteration++;
             //System.out.print(label+" FILE NAME");
             writeOnPath(NTA.getClocks().size()+" "+NTA.getStateSet().size()+" "+NTA.getTransitions().size()+"; ", "Output"+label+".txt"); 
+            
+            //Updated version to output
+            // writeOnPath(NTA.getClocks().size()+" "+NTA.getStateSet().size()+" "+NTA.getTransitions().size()+"; ", "Output"+label+".txt");
+
             //System.out.print(iteration+" - "+NTA.getTransitions().size()+" | ");
             if(threeValue==0)  {
             	printCounterExample();

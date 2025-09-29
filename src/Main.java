@@ -1,5 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
+;lnmbn9 * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -118,6 +118,7 @@ public class Main {
         			return;
         		
         		taskGen.taskSetSort(policyId);
+				System.out.println("Task Set");
         		taskGen.print(); 
         		
         //		System.out.println();
@@ -127,12 +128,20 @@ public class Main {
         		
         		//int k = 2;			//predefined iteration interval
         		System.out.println();
-        		System.out.println("Specify the number of tasks per iteration: Enter Integer Range := 0 - 4");  
+        		System.out.println("Specify the number of tasks per iteration: Press an Integer Between: 1 - 6");  
+        		System.out.println("To verifify WITHOUT abstraction: Press: 10"); 
         		int iterationTasks = scan.nextInt();	//predefined iteration interval
 //            for (int m = 0; m < 4; m++)	{
 //            	label = new String(label+"-"+m);
                 
-                
+				
+				//No For spotlight abstraction
+				if (iterationTasks > 2 || iterationTasks < 0) {
+					//System.out.println("Executed ");
+					iterationTasks = taskGen.getTaskSet().size();
+				} else
+					iterationTasks = 2;
+					            
                 try (FileWriter myWriter = new FileWriter("Output"+label+".txt")) {
                 	System.out.println();
                     System.out.println("Output File Successfully Created: Main class.");
@@ -154,7 +163,7 @@ public class Main {
             //long minutes = (timeElapsed / 1000) / 60;
             //long seconds = (timeElapsed / 1000);// % 60;
             //qa.writeOnPath(" "+minutes+"m"+seconds+"s\n", "filename.txt");
-            	QueueAbstractor.writeOnPath(" "+timeElapsed+"s\n", "Output"+label+".txt");
+				QueueAbstractor.writeOnPath("Time= "+timeElapsed+"ms ", "Output"+label+"Example");
             	System.out.println();
                 System.out.println("Program Terminate");
                 

@@ -142,7 +142,7 @@ public class Main {
 				} else
 					iterationTasks = 2;
 					            
-                try (FileWriter myWriter = new FileWriter("Output"+label+".txt")) {
+                try (FileWriter myWriter = new FileWriter("Output"+label)) {
                 	System.out.println();
                     System.out.println("Output File Successfully Created: Main class.");
                 } catch (IOException e) {
@@ -163,7 +163,7 @@ public class Main {
             //long minutes = (timeElapsed / 1000) / 60;
             //long seconds = (timeElapsed / 1000);// % 60;
             //qa.writeOnPath(" "+minutes+"m"+seconds+"s\n", "filename.txt");
-				QueueAbstractor.writeOnPath("Time= "+timeElapsed+"ms ", "Output"+label+"Example");
+				QueueAbstractor.writeOnPath("Time= "+timeElapsed+"ms ", "Output"+label);
             	System.out.println();
                 System.out.println("Program Terminate");
                 

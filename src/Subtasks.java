@@ -37,6 +37,8 @@ public class Subtasks {
 
     public void createSubTasks() {
         int defaultOccurrance = 0;
+        double totalDeadline = 0;
+        double totalPeriod = 0;
         // int subtasksCreated = 0;
         for (int i = 0; i < tasks.size(); i++) {
             int numSubTasks = calculateNumSubtasks(tasks.get(i));
@@ -44,16 +46,20 @@ public class Subtasks {
             int remainder = (int) (currTask.getWCET() % timeslice);
             System.out.println("REMAINDER: " + remainder);
             for (int j = 0; j < numSubTasks-1; j++) {
-                // subtasksCreated += 1;
-                subtasks.add(new Task(String.format("t%d.%d", i + 1, j + 1), timeslice, (j+1)*timeslice, (j+1)*timeslice, defaultOccurrance));
-                // System.out.println("Subtask added:\n" + subtasks.get(subtasksCreated-1).toString());
+                subtasks.add(new Task(String.format("t%d.%d", i + 1, j + 1), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
+                totalDeadline += timeslice;
+                totalPeriod += timeslice;
             }
 
             // If the WCET cannot be divided without a remainder, the remainder value is assigned to last subtask's WCET...
             if (remainder > 0) {
-                subtasks.add(new Task(String.format("t%d.%d", i + 1, numSubTasks), remainder, (numSubTasks)*timeslice, (numSubTasks)*timeslice, defaultOccurrance));
+                subtasks.add(new Task(String.format("t%d.%d", i + 1, numSubTasks), remainder, (totalPeriod + remainder), (totalDeadline + remainder), defaultOccurrance));
+                totalDeadline += remainder;
+                totalPeriod += remainder;
             } else {
-                subtasks.add(new Task(String.format("t%d.%d", i + 1, numSubTasks), timeslice, (numSubTasks)*timeslice, (numSubTasks)*timeslice, defaultOccurrance));
+                subtasks.add(new Task(String.format("t%d.%d", i + 1, numSubTasks), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
+                totalDeadline += timeslice;
+                totalPeriod += timeslice;
             }
         }
     }
@@ -61,21 +67,27 @@ public class Subtasks {
     public void createAndWriteToIntermediateFile() {
         File intermediateFile = new File(taskSetLabel + "-intermediate.txt");
         try {
+            
             if (intermediateFile.createNewFile()) {
                 System.out.println("Intermediate file created!");
-                FileWriter writer = new FileWriter(taskSetLabel + "-intermediate.txt", true);
-
-                for (Task st: subtasks) {
-                    System.out.println("WCET: " + st.getWCET());
-                    System.out.println("Deadline: " + st.getDeadline());
-                    System.out.println("Period: " + st.getPeriod());
-                    writer.write(String.format("t%d.%d %f %f %f\n", st.getWCET(), st.getDeadline(), st.getPeriod()));
-                }
-
-                writer.close();
+            } else {
+                System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Failed to create intermediate file - already exists");
+                // This can be done better... Fix later.
+                intermediateFile.delete();
+                intermediateFile.createNewFile();
             }
+            FileWriter writer = new FileWriter(taskSetLabel + "-intermediate.txt", true);
+            
+            for (Task st: subtasks) {
+                System.out.println("WCET: " + st.getWCET());
+                System.out.println("Deadline: " + st.getDeadline());
+                System.out.println("Period: " + st.getPeriod());
+                writer.write(String.format("%s %d %d %d\n", st.getLabel(), (int) st.getWCET(), (int) st.getDeadline(), (int) st.getPeriod()));
+            }
+
+            writer.close();
         } catch (Exception e) {
-            System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Could not create/write to intermediate file:");
+            System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Could not finish creating/writing file:");
             e.printStackTrace();
         }
     }

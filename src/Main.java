@@ -21,7 +21,7 @@ import java.io.*;
 
 /**
  *
- * @author Madoda
+ * @author Madoda, Calvyn
  */
 
 
@@ -119,19 +119,20 @@ public class Main {
 					
 					taskGen = new TaskGenerator(filename, 0.8, i*5);
 					
-					if (policyId == 5) {
-						Subtasks subtasks = new Subtasks(taskGen, timeslice);
-						subtasks.createSubTasks();
-						subtasks.createAndWriteToIntermediateFile();
-						System.out.println("Subtasks created:");
-						System.out.println(subtasks.toString());
-						return;
-					}
+					// if (policyId == 5) {
+					// 	Subtasks subtasks = new Subtasks(taskGen, timeslice);
+					// 	subtasks.createSubTasks();
+					// 	subtasks.createAndWriteToIntermediateFile();
+					// 	System.out.println("Subtasks created:");
+					// 	System.out.println(subtasks.toString());
+					// 	return;
+					// 	// taskGen = new TaskGenerator("../src/" + filename + "-intermediate", 0.8, i*5);
+					// }
         		}
         		else 
-        			return;
+					return;
         		
-        		taskGen.taskSetSort(policyId);
+        		// taskGen.taskSetSort(policyId);
 				System.out.println("Task Set");
         		taskGen.print(); 
         		

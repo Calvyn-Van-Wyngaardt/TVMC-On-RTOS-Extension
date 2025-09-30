@@ -59,8 +59,10 @@ public class Main {
 				
         		int policyId = scan.nextInt();
         		System.out.println();
-            	
-                switch (policyId) {
+
+				int timeslice = 0;
+
+				switch (policyId) {
 					case 1:
 						System.out.println("First Come First Serve Queue: ");
 						break;
@@ -74,7 +76,10 @@ public class Main {
                     	System.out.println("Highest Response Ration Next Queue: ");     
 						break;
 					case 5:
-	                	System.out.println("Round Robin (Preemptive) Queue: ");
+						System.out.println("Enter the timeslice value: ");
+						timeslice = scan.nextInt();
+
+						System.out.println("Round Robin (Preemptive) Queue: ");
 						break;
 					case 6:
 	                	System.out.println("Rate Monotonic (Preemptive) Queue: ");
@@ -111,8 +116,16 @@ public class Main {
         			filename = filename.replace(".txt", "");
 					System.out.println();
         			label = filename;
-        			taskGen = new TaskGenerator(filename, 0.8, i*5);
-        			//taskGen.readTaskSet(filename);
+					
+					taskGen = new TaskGenerator(filename, 0.8, i*5);
+					
+					if (policyId == 5) {
+						Subtasks subtasks = new Subtasks(taskGen, timeslice);
+						subtasks.createSubTasks();
+						subtasks.createAndWriteToIntermediateFile();
+						System.out.println("Subtasks created!");
+						return;
+					}
         		}
         		else 
         			return;

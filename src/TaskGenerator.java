@@ -33,9 +33,21 @@ public class TaskGenerator {
         seed = _seed;
         System.out.println(label+" TASKSET SIZE: "+numberOfTasks+" "+seed+" "+utilization);
 	}
+
+    public int getNumberOfTasks() {
+        return numberOfTasks;
+    }
+
+    public double getUtilization() {
+        return utilization;
+    }
 	
 	public String getLabel()    {
         return label;
+    }
+
+    public int getSeed() {
+        return seed;
     }
         
     public ArrayList<Task> getTaskSet()    {

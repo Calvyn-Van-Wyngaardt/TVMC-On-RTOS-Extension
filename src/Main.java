@@ -108,9 +108,9 @@ public class Main {
 					}
 					int fileChosen = scan.nextInt();
                   	String filename = inputFiles[fileChosen];
-        			
+        			filename = filename.replace(".txt", "");
 					System.out.println();
-        			label = filename;//new String(filename);
+        			label = filename;
         			taskGen = new TaskGenerator(filename, 0.8, i*5);
         			//taskGen.readTaskSet(filename);
         		}
@@ -142,7 +142,7 @@ public class Main {
 				} else
 					iterationTasks = 2;
 					            
-                try (FileWriter myWriter = new FileWriter("Output"+label)) {
+                try (FileWriter myWriter = new FileWriter("Output" + label + ".txt")) {
                 	System.out.println();
                     System.out.println("Output File Successfully Created: Main class.");
                 } catch (IOException e) {
@@ -163,7 +163,7 @@ public class Main {
             //long minutes = (timeElapsed / 1000) / 60;
             //long seconds = (timeElapsed / 1000);// % 60;
             //qa.writeOnPath(" "+minutes+"m"+seconds+"s\n", "filename.txt");
-				QueueAbstractor.writeOnPath("Time= "+timeElapsed+"ms ", "Output"+label);
+				QueueAbstractor.writeOnPath("Time= "+timeElapsed+"ms ", "Output" + label + ".txt");
             	System.out.println();
                 System.out.println("Program Terminate");
                 

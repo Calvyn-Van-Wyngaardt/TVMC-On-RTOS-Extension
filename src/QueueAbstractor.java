@@ -156,7 +156,6 @@ public final class QueueAbstractor {
     }
     
     public void generateNTA(TimedAutomata NTA)  {
-    	
         if(!automataArray.isEmpty())
             NTA = automataArray.get(0);
                 
@@ -170,10 +169,10 @@ public final class QueueAbstractor {
         int threeValue = 1;
         int iteration = 0;
         double abstractZn = 0.0; //new ClockZone();
-        
+      
         while(!concreteTaskQueue.isEmpty()) {
             //System.out.println("Highest Clock Value 11: "+ abstractZn);
-            
+        	
         	automataArray.clear();
 //        	System.out.println("Abstract Queue CALLED WITH SIZE: "+ abstractTaskQueue.size());
             generateAbstractQueue(abstractZn);
@@ -185,12 +184,12 @@ public final class QueueAbstractor {
             
             for(int i=1;i<automataArray.size();++i) {
                 NTA = NTA.addTimedAutomata(automataArray.get(i));
-            }
-            
-            //System.out.println("NTA AFTER ");          
-            //NTA.print();
+            }            
+//            System.out.println("NTA AFTER ");          
+//            NTA.print();           
             
             threeValue = tvModelChecker.threeVReachability(NTA,abstractTaskQueue, counterPath); 
+            
             //Add terminatedTaskArray if task has reached terminate state? 
             
             //terminatedTaskArray = new ArrayList<>();
@@ -199,22 +198,20 @@ public final class QueueAbstractor {
             
             iteration++;
             //System.out.print(label+" FILE NAME");
-            writeOnPath(NTA.getClocks().size()+" "+NTA.getStateSet().size()+" "+NTA.getTransitions().size()+"; ", "Output"+label+".txt"); 
             
-            //Updated version to output
-            // writeOnPath(NTA.getClocks().size()+" "+NTA.getStateSet().size()+" "+NTA.getTransitions().size()+"; ", "Output"+label+".txt");
-
+            writeOnPath("Clocks= "+NTA.getClocks().size()+" States= "+NTA.getStateSet().size()+" Trans="+NTA.getTransitions().size()+"; \n", "Output"+label+".txt"); 
             //System.out.print(iteration+" - "+NTA.getTransitions().size()+" | ");
             if(threeValue==0)  {
+                System.out.println("NOT SCHED: ");
             	printCounterExample();
-            	writeOnPath(iteration+" ; "+" Not Sched","Output"+label+".txt");
+            	writeOnPath("Ite= "+iteration+" ; "+" Not Sched \n","Output"+label+".txt");
                 return false;
             }
             //System.out.println("Highest Clock Value: "+ abstractZn);
-            //updateConcreteQueue(concreteTaskQueue, abstractTaskQueue);
-            
+            //updateConcreteQueue(concreteTaskQueue, abstractTaskQueue);           
         }
-        writeOnPath(iteration+" ; "+" Sched", "Output"+label+".txt");
+        System.out.println("SCHED: ");
+        writeOnPath("Ite= "+iteration+" ; "+" Sched \n", "Output"+label+".txt");
         //System.out.println("Highest Clock Value : "+ abstractZn);
         
         //System.out.println();
@@ -223,9 +220,11 @@ public final class QueueAbstractor {
     
     public void printCounterExample()	{
     	System.out.println("Counter Example: "); 
-    	for(StateZone cp: counterPath)	{
-    		System.out.println(toString()+" --> "); 
+    	for(int i = 0; i < counterPath.size() - 1; i++) {
+    		System.out.println("\n" + i + ") " + counterPath.get(i).toString() + " --> \n"); 
     	}
+        System.out.println("\n" + (counterPath.size() - 1) + ") " + counterPath.get(counterPath.size()-1).toString());
+
     	System.out.println();
     }
     

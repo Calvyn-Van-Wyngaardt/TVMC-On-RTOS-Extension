@@ -191,7 +191,7 @@ public class State {
 
     @Override
     public String toString()  {
-        return "State: "+label+" "+isInitial+" "+isFinal+" "+invariant.toString();
+        return "State label\t\t\tisInitial\tisFinal\t\tInvariant(s)\n" + label + "\t\t" + isInitial + "\t\t" + isFinal + "\t\t" + invariant.toString();
         /*outTransitions.forEach((_item) -> {    
             _item.print();
         });*/

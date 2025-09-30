@@ -199,6 +199,7 @@ public class StateZone {
     @Override
     public String toString()  {
         //zone.printDBM();
-        return "Zone: "+range+" "+zoneLocation.toString();
+        String out = "Zone Range:\t" + range + "\nZoneLocation:\n" + zoneLocation.toString();
+        return out;
     }
 }

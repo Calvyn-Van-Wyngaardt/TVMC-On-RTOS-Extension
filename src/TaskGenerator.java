@@ -90,7 +90,7 @@ public class TaskGenerator {
         public void readTaskSet(String fileName)	{
              
         	try {
-                File myObj = new File("../tasksetInput/" + fileName);
+                File myObj = new File("../tasksetInput/" + fileName + ".txt");
 
         	      Scanner myReader = new Scanner(myObj);
         	      while (myReader.hasNextLine()) {
@@ -99,6 +99,7 @@ public class TaskGenerator {
         	        String[] splited = data.trim().split("\\s+");
         	        //Task ts = new Task(splited[0], Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3]), 0); 
         	        //int i = Integer.parseInt(splited[0]);
+
         	        Task ts = new Task(splited[0], Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3]), 0); 
         	        //Task t = new Task("T"+i,wcet,period, deadline,occurance); //, occurance);   Task(String s, double w, double p, double d)
                     ts.setTaskAutomata();
@@ -108,9 +109,15 @@ public class TaskGenerator {
         	        
         	      }
         	      myReader.close();
-        	    } catch (FileNotFoundException e) {
+        	    } catch (IndexOutOfBoundsException e) {
+                    System.out.println("Error reading textfile: One of the following values are missing:\ntaskName\tWCET\tDeadline\tPeriod");
+                    e.printStackTrace();
+                    return;
+                }
+                catch (Exception e) {
         	      System.out.println("An error occurred.");
         	      e.printStackTrace();
+                  return;
         	    }
         }
         

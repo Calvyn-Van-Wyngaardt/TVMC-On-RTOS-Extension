@@ -123,7 +123,8 @@ public class Main {
 						Subtasks subtasks = new Subtasks(taskGen, timeslice);
 						subtasks.createSubTasks();
 						subtasks.createAndWriteToIntermediateFile();
-						System.out.println("Subtasks created!");
+						System.out.println("Subtasks created:");
+						System.out.println(subtasks.toString());
 						return;
 					}
         		}

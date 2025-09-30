@@ -37,23 +37,23 @@ public class Subtasks {
 
     public void createSubTasks() {
         int defaultOccurrance = 0;
-        int subtasksCreated = 0;
+        // int subtasksCreated = 0;
         for (int i = 0; i < tasks.size(); i++) {
             int numSubTasks = calculateNumSubtasks(tasks.get(i));
             Task currTask = tasks.get(i);
             int remainder = (int) (currTask.getWCET() % timeslice);
             System.out.println("REMAINDER: " + remainder);
-            for (int j = 0; j < numSubTasks; j++) {
-                subtasksCreated += 1;
+            for (int j = 0; j < numSubTasks-1; j++) {
+                // subtasksCreated += 1;
                 subtasks.add(new Task(String.format("t%d.%d", i + 1, j + 1), timeslice, (j+1)*timeslice, (j+1)*timeslice, defaultOccurrance));
-                System.out.println("Subtask added:\n" + subtasks.get(subtasksCreated-1).toString());
+                // System.out.println("Subtask added:\n" + subtasks.get(subtasksCreated-1).toString());
             }
 
             // If the WCET cannot be divided without a remainder, the remainder value is assigned to last subtask's WCET...
             if (remainder > 0) {
-                subtasks.add(new Task(String.format("t%d.%d", i + 1, numSubTasks), remainder, (numSubTasks+1)*timeslice, (numSubTasks+1)*timeslice, defaultOccurrance));
+                subtasks.add(new Task(String.format("t%d.%d", i + 1, numSubTasks), remainder, (numSubTasks)*timeslice, (numSubTasks)*timeslice, defaultOccurrance));
             } else {
-                subtasks.add(new Task(String.format("t%d.%d", i + 1, numSubTasks), timeslice, (numSubTasks+1)*timeslice, (numSubTasks+1)*timeslice, defaultOccurrance));
+                subtasks.add(new Task(String.format("t%d.%d", i + 1, numSubTasks), timeslice, (numSubTasks)*timeslice, (numSubTasks)*timeslice, defaultOccurrance));
             }
         }
     }
@@ -78,5 +78,14 @@ public class Subtasks {
             System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Could not create/write to intermediate file:");
             e.printStackTrace();
         }
+    }
+
+    public String toString() {
+        String out = "";
+        for (Task st: subtasks) {
+            out += st.toString() + "\n";
+        }
+
+        return out;
     }
 }

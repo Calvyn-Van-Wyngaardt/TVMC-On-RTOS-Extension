@@ -11,11 +11,9 @@
 //import be.uantwerpen.idlab.cobra.tasksetgenerator.synthetictaskgenerator.SetsGenerator;
 //import be.uantwerpen.idlab.cobra.tasksetgenerator.taskcreator.TaskCreator;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.time.Instant;
 import java.util.*;
-import java.io.*;
 
 
 
@@ -119,15 +117,15 @@ public class Main {
 					
 					taskGen = new TaskGenerator(filename, 0.8, i*5);
 					
-					// if (policyId == 5) {
-					// 	Subtasks subtasks = new Subtasks(taskGen, timeslice);
-					// 	subtasks.createSubTasks();
-					// 	subtasks.createAndWriteToIntermediateFile();
-					// 	System.out.println("Subtasks created:");
-					// 	System.out.println(subtasks.toString());
-					// 	return;
-					// 	// taskGen = new TaskGenerator("../src/" + filename + "-intermediate", 0.8, i*5);
-					// }
+					if (policyId == 5) {
+						Subtasks subtasks = new Subtasks(taskGen, timeslice);
+						subtasks.createSubTasks();
+						subtasks.createAndWriteToIntermediateFile();
+						System.out.println("Subtasks created:");
+						System.out.println(subtasks.toString());
+						return;
+						// taskGen = new TaskGenerator("../src/" + filename + "-intermediate", 0.8, i*5);
+					}
         		}
         		else 
 					return;

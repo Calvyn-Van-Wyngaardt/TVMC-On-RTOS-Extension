@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Subtasks {
     private String taskSetLabel;
@@ -35,39 +36,106 @@ public class Subtasks {
     //     //
     // }
 
+    public int getMaxSubtasks(ArrayList<Integer> tasks) {
+        int max = 0;
+        Iterator<Integer> it = tasks.iterator();
+
+        while (it.hasNext()) {
+            int currVal = it.next();
+            max = (currVal >= max ? currVal : max);
+        }
+
+        return max;
+    }
+
     public void createSubTasks() {
         int defaultOccurrance = 0;
         double totalDeadline = 0;
         double totalPeriod = 0;
-        // int subtasksCreated = 0;
-        for (int i = 0; i < tasks.size(); i++) {
-            int numSubTasks = calculateNumSubtasks(tasks.get(i));
-            Task currTask = tasks.get(i);
-            int remainder = (int) (currTask.getWCET() % timeslice);
-            System.out.println("REMAINDER: " + remainder);
-            for (int j = 0; j < numSubTasks-1; j++) {
-                subtasks.add(new Task(String.format("t%d.%d", i + 1, j + 1), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
-                totalDeadline += timeslice;
-                totalPeriod += timeslice;
-            }
+        ArrayList<Integer> numSubtasksPerTask = new ArrayList<>();
+        
+        for (Task t : tasks) {
+            int numSubTasks = calculateNumSubtasks(t);
+            numSubtasksPerTask.add(numSubTasks);
+        }
 
-            // If the WCET cannot be divided without a remainder, the remainder value is assigned to last subtask's WCET...
-            if (remainder > 0) {
-                subtasks.add(new Task(String.format("t%d.%d", i + 1, numSubTasks), remainder, (totalPeriod + remainder), (totalDeadline + remainder), defaultOccurrance));
-                totalDeadline += remainder;
-                totalPeriod += remainder;
-            } else {
-                subtasks.add(new Task(String.format("t%d.%d", i + 1, numSubTasks), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
-                totalDeadline += timeslice;
-                totalPeriod += timeslice;
+        int mostSubtasks = getMaxSubtasks(numSubtasksPerTask);
+        int numTasks = tasks.size();
+
+        // ArrayList<Integer> numSubTasksPerTask = getNumSubtasksForTaskset(tasks);
+
+        // Interleaving subtasks in typical Round Robin Fashion
+        for (int currSubTask = 0; currSubTask < mostSubtasks; currSubTask++) {
+            for (int currTaskIndex = 0; currTaskIndex < numTasks; currTaskIndex++) {
+                Task currTask = tasks.get(currTaskIndex);
+                
+                if (currSubTask < numSubtasksPerTask.get(currTaskIndex)) {
+                    System.out.println("Creating task t" + (currTaskIndex+1) + "." + (currSubTask+1));
+                    System.out.println("Current Sub Task: " + (currSubTask+1));
+                    System.out.println("Current Task: " + (currTaskIndex+1));
+                    System.out.println("Number of SubTasksPerTask size: " + numSubtasksPerTask.size());
+                    if (currSubTask < numSubtasksPerTask.get(currTaskIndex) - 1) {
+                        subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, currSubTask + 1), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
+                        totalDeadline += timeslice;
+                        totalPeriod += timeslice;
+                    } else {
+                        // If the WCET cannot be divided without a remainder, the remainder value is assigned to last subtask's WCET...
+                        int remainder = (int) (currTask.getWCET() % timeslice);
+                        if (remainder > 0) {
+                            subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), remainder, (totalPeriod + remainder), (totalDeadline + remainder), defaultOccurrance));
+                            totalDeadline += remainder;
+                            totalPeriod += remainder;
+                        } else {
+                            subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
+                            totalDeadline += timeslice;
+                            totalPeriod += timeslice;
+                        }
+                    }
+                } else {
+                    System.out.println(String.format("Subtasks - [createSubTasks]: Current subtask index (%d) does not exist for task %d", currSubTask, (currTaskIndex + 1)));
+                }
+
             }
         }
+
+        // int subtasksCreated = 0;
+        // for (int i = 0; i < tasks.size(); i++) {
+        //     int numSubTasks = calculateNumSubtasks(tasks.get(i));
+        //     Task currTask = tasks.get(i);
+        //     int remainder = (int) (currTask.getWCET() % timeslice);
+        //     System.out.println("REMAINDER: " + remainder);
+        //     for (int j = 0; j < numSubTasks-1; j++) {
+        //         subtasks.add(new Task(String.format("t%d.%d", i + 1, j + 1), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
+        //         totalDeadline += timeslice;
+        //         totalPeriod += timeslice;
+        //     }
+
+        //     // If the WCET cannot be divided without a remainder, the remainder value is assigned to last subtask's WCET...
+        //     if (remainder > 0) {
+        //         subtasks.add(new Task(String.format("t%d.%d", i + 1, numSubTasks), remainder, (totalPeriod + remainder), (totalDeadline + remainder), defaultOccurrance));
+        //         totalDeadline += remainder;
+        //         totalPeriod += remainder;
+        //     } else {
+        //         subtasks.add(new Task(String.format("t%d.%d", i + 1, numSubTasks), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
+        //         totalDeadline += timeslice;
+        //         totalPeriod += timeslice;
+        //     }
+        // }
+    }
+
+    public ArrayList<Integer> getNumSubtasksForTaskset(ArrayList<Task> ts) {
+        ArrayList<Integer> subTasksPerTask = new ArrayList<>();
+        for (Task t : tasks) {
+            int currSubTasks = calculateNumSubtasks(t);
+            subTasksPerTask.add(currSubTasks);
+        }
+
+        return subTasksPerTask;
     }
 
     public void createAndWriteToIntermediateFile() {
         File intermediateFile = new File(taskSetLabel + "-intermediate.txt");
         try {
-            
             if (intermediateFile.createNewFile()) {
                 System.out.println("Intermediate file created!");
             } else {
@@ -92,6 +160,7 @@ public class Subtasks {
         }
     }
 
+    @Override
     public String toString() {
         String out = "";
         for (Task st: subtasks) {

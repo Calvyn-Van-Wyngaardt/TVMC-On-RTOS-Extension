@@ -97,30 +97,6 @@ public class Subtasks {
 
             }
         }
-
-        // int subtasksCreated = 0;
-        // for (int i = 0; i < tasks.size(); i++) {
-        //     int numSubTasks = calculateNumSubtasks(tasks.get(i));
-        //     Task currTask = tasks.get(i);
-        //     int remainder = (int) (currTask.getWCET() % timeslice);
-        //     System.out.println("REMAINDER: " + remainder);
-        //     for (int j = 0; j < numSubTasks-1; j++) {
-        //         subtasks.add(new Task(String.format("t%d.%d", i + 1, j + 1), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
-        //         totalDeadline += timeslice;
-        //         totalPeriod += timeslice;
-        //     }
-
-        //     // If the WCET cannot be divided without a remainder, the remainder value is assigned to last subtask's WCET...
-        //     if (remainder > 0) {
-        //         subtasks.add(new Task(String.format("t%d.%d", i + 1, numSubTasks), remainder, (totalPeriod + remainder), (totalDeadline + remainder), defaultOccurrance));
-        //         totalDeadline += remainder;
-        //         totalPeriod += remainder;
-        //     } else {
-        //         subtasks.add(new Task(String.format("t%d.%d", i + 1, numSubTasks), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
-        //         totalDeadline += timeslice;
-        //         totalPeriod += timeslice;
-        //     }
-        // }
     }
 
     public ArrayList<Integer> getNumSubtasksForTaskset(ArrayList<Task> ts) {
@@ -133,18 +109,27 @@ public class Subtasks {
         return subTasksPerTask;
     }
 
-    public void createAndWriteToIntermediateFile() {
-        File intermediateFile = new File(taskSetLabel + "-intermediate.txt");
+    public File createAndWriteToIntermediateFile() {
+        File intermediateFile = new File("../tasksetInput/" + taskSetLabel + "-intermediate.txt");
+        
         try {
             if (intermediateFile.createNewFile()) {
                 System.out.println("Intermediate file created!");
             } else {
                 System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Failed to create intermediate file - already exists");
                 // This can be done better... Fix later.
-                intermediateFile.delete();
-                intermediateFile.createNewFile();
+                if (intermediateFile.delete()) {
+                    System.out.println("Deleted file successfully!");
+                    if (intermediateFile.createNewFile()) {                    
+                        System.out.println("New File created successfully!");
+                    } else {
+                        System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Failed to create intermediate file - already exists");
+                    }
+                } else {
+                    System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Failed to delete intermediate file...");
+                }
             }
-            FileWriter writer = new FileWriter(taskSetLabel + "-intermediate.txt", true);
+            FileWriter writer = new FileWriter("../tasksetInput/" + taskSetLabel + "-intermediate.txt", true);
             
             for (Task st: subtasks) {
                 System.out.println("WCET: " + st.getWCET());
@@ -158,6 +143,8 @@ public class Subtasks {
             System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Could not finish creating/writing file:");
             e.printStackTrace();
         }
+
+        return intermediateFile;
     }
 
     @Override

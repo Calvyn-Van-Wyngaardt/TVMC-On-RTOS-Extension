@@ -38,6 +38,7 @@ public class Main {
          		int i=1, j=2; //m=1;   		
         		int l = j;
         		
+				File tempFile = new File("");
         		Scanner scan = new Scanner(System.in);
         		System.out.println("TVMC: RT Schedulability Checker");
         		System.out.println();
@@ -53,7 +54,7 @@ public class Main {
         		System.out.println("  Enter 3 - Longest Remaining Time First Queue: ");
         		System.out.println("  Enter 4 - Highest Response Ration Next Queue: ");
         		System.out.println("  Enter 5 - Round Robin (Preemptive): ");
-        		System.out.println("  Enter 6 - Fixed Priority (Preemptive): ");
+        		// System.out.println("  Enter 6 - Fixed Priority (Preemptive): ");
 				
         		int policyId = scan.nextInt();
         		System.out.println();
@@ -120,11 +121,12 @@ public class Main {
 					if (policyId == 5) {
 						Subtasks subtasks = new Subtasks(taskGen, timeslice);
 						subtasks.createSubTasks();
-						subtasks.createAndWriteToIntermediateFile();
+						tempFile = subtasks.createAndWriteToIntermediateFile();
 						System.out.println("Subtasks created:");
 						System.out.println(subtasks.toString());
-						return;
-						// taskGen = new TaskGenerator("../src/" + filename + "-intermediate", 0.8, i*5);
+						taskGen = new TaskGenerator(filename + "-intermediate", 0.8, i*5);
+						label = label + "-intermediate";
+						// return;
 					}
         		}
         		else 
@@ -181,7 +183,7 @@ public class Main {
                 System.out.println("Program Terminate");
                 
                 scan.close();
-            	
+				tempFile.delete();
             	
        //     	}
        //     }

@@ -8,11 +8,11 @@
  *
  * @author Madoda
  */
-import java.util.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.*;
 
 public final class QueueAbstractor {
     private final TMVC tvModelChecker;  //init as null
@@ -166,40 +166,57 @@ public final class QueueAbstractor {
     }
     
     public boolean queueAbstraction() throws IOException {
+        System.out.println("QueueAbstractor - [queueAbstraction]: Entered function");
         int threeValue = 1;
         int iteration = 0;
         double abstractZn = 0.0; //new ClockZone();
       
+        System.out.println("QueueAbstractor - [queueAbstraction]: Entering while(concreteTaskQueue != empty)");
         while(!concreteTaskQueue.isEmpty()) {
             //System.out.println("Highest Clock Value 11: "+ abstractZn);
         	
+            System.out.println("QueueAbstractor - [queueAbstraction]: Clearing Automata Array");
         	automataArray.clear();
 //        	System.out.println("Abstract Queue CALLED WITH SIZE: "+ abstractTaskQueue.size());
+            
+            System.out.println("QueueAbstractor - [queueAbstraction]: Generating Abstract Queue...");
             generateAbstractQueue(abstractZn);
             TimedAutomata NTA;
             NTA = new TimedAutomata(automataArray.get(0));
+            System.out.println("QueueAbstractor - [queueAbstraction]: Creating Network of Timed Automata - size: " + automataArray.size());
+
 //            System.out.println("Abstract Queue IS NOW SIZE: "+ abstractTaskQueue.size());
 //            System.out.println("AUTOMATA GET  ");          
 //            automataArray.get(0).print();
             
+            
             for(int i=1;i<automataArray.size();++i) {
-                NTA = NTA.addTimedAutomata(automataArray.get(i));
+                TimedAutomata t = automataArray.get(i);
+                System.out.println("Adding the following automataArray: \n" + t.toString());
+                System.out.println(t);
+                
+                NTA = NTA.addTimedAutomata(t);
+                System.out.println("Finished adding automata " + i);
             }            
 //            System.out.println("NTA AFTER ");          
 //            NTA.print();           
-            
+
+            System.out.println("QueueAbstractor - [queueAbstraction]: Performing Three Value Reachability");
             threeValue = tvModelChecker.threeVReachability(NTA,abstractTaskQueue, counterPath); 
             
             //Add terminatedTaskArray if task has reached terminate state? 
             
             //terminatedTaskArray = new ArrayList<>();
             
+            System.out.println("QueueAbstractor - [queueAbstraction]: Abstract Zone = timeline (" + tvModelChecker.timeline + ")");
             abstractZn = tvModelChecker.timeline;
             
             iteration++;
+            System.out.println("QueueAbstractor - [queueAbstraction]: Increasing iteration to " + iteration);
             //System.out.print(label+" FILE NAME");
             
             writeOnPath("Clocks= "+NTA.getClocks().size()+" States= "+NTA.getStateSet().size()+" Trans="+NTA.getTransitions().size()+"; \n", "Output"+label+".txt"); 
+            System.out.println("QueueAbstractor - [queueAbstraction]: Writing to file...");
             //System.out.print(iteration+" - "+NTA.getTransitions().size()+" | ");
             if(threeValue==0)  {
                 System.out.println("NOT SCHED: ");
@@ -208,9 +225,13 @@ public final class QueueAbstractor {
                 return false;
             }
             //System.out.println("Highest Clock Value: "+ abstractZn);
-            //updateConcreteQueue(concreteTaskQueue, abstractTaskQueue);           
+            //updateConcreteQueue(concreteTaskQueue, abstractTaskQueue);
+            String reached = (threeValue == 1) ? "unknown/true" : "false";
+            System.out.println("QueueAbstractor - [queueAbstraction]: Reachability is " + reached);
         }
-        System.out.println("SCHED: ");
+
+        System.out.println("QueueAbstractor - [queueAbstraction]: ConcreteQueue processed with no failed schedule");
+        System.out.println("QueueAbstractor - [queueAbstraction]: Schedulability property: Schedulable");
         writeOnPath("Ite= "+iteration+" ; "+" Sched \n", "Output"+label+".txt");
         //System.out.println("Highest Clock Value : "+ abstractZn);
         

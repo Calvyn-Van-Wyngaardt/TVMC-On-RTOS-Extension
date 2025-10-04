@@ -882,6 +882,25 @@ public class TimedAutomata {
         	return t.getTimedAction().getCommand();
         }
         
+    //     private final ArrayList<State> stateSet;
+    // private ArrayList<Clock> clocks;
+    // private final ArrayList<ClockConstraint> acc; //set of atomic clock constraints in guard or state invariant
+    // private final ArrayList<TimedAction> alphabet;
+    // private final ArrayList<Transition> transitions;
+    // private boolean inUse;
+
+        @Override
+        public String toString() {
+            String out = "=================\n";
+            out += "State count: " + stateSet.size() + "\n";
+            out += "Clock count: " + clocks.size() + "\n";
+            out += "Atomic Clock Constraints count: " + acc.size() + "\n";
+            out += "Alphabet: " + alphabet.size() + "\n";
+            out += "Transition count: " + transitions.size() + "\n";
+            out += "=================\n\n";
+
+            return out;
+        }
       
       
        

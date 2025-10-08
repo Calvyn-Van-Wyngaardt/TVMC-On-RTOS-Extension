@@ -19,6 +19,7 @@ public final class QueueAbstractor {
     //PriorityQueue<Integer> pQueue = new PriorityQueue<Integer>();
     private final Queue<Task> abstractTaskQueue; //init
     private final Queue<Task> concreteTaskQueue; //init
+    private final LinkedList<Entry> iterationEntries;
     private final ArrayList<Task> terminatedTaskArray; //init
     private final ArrayList<TimedAutomata> automataArray; //init
     private final ArrayList<Processor> processorSet; //Init

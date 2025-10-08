@@ -101,12 +101,7 @@ public final class Task implements Comparable<Task> {
         setAbstracTaskAutomata();
         etVar = 0;
     }
-    
-    
 
-    
-
-    
     public void setAbstracTaskAutomata()   {
         taskAutomata = new TimedAutomata();
         
@@ -321,6 +316,10 @@ public final class Task implements Comparable<Task> {
     public TimedAutomata getTaskAutomata()  {
         return taskAutomata;
     } 
+
+    public boolean isPeriodic() {
+        return (period > 0) ? true : false; 
+    }
      
     
     @Override

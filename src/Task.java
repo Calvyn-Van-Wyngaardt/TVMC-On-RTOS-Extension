@@ -6,6 +6,7 @@
 
 import java.util.ArrayList;
 import java.util.Queue;
+import java.util.UUID;
 
 /**
  *
@@ -20,9 +21,12 @@ public final class Task implements Comparable<Task> {
     private double responseRatio;
     private double etVar;
     private TimedAutomata taskAutomata;
+    // private static int id;
+    private UUID uuid;
     //private Clock processorClock;
     
     public Task(String s, double w, double p, double d, double o) {
+        uuid = UUID.randomUUID();
         label = s;
         setWCET(w);
         setPeriod(p);
@@ -37,6 +41,7 @@ public final class Task implements Comparable<Task> {
     }
     
     public Task() {
+        uuid = UUID.randomUUID();
         label = "Default";
         setWCET(0);
         setPeriod(0);
@@ -51,6 +56,7 @@ public final class Task implements Comparable<Task> {
     }
     
     public Task(Task other) {
+        uuid = UUID.randomUUID();
         label = other.label;
         wcet = other.wcet;
         period = other.period;
@@ -66,7 +72,7 @@ public final class Task implements Comparable<Task> {
     
     
     public Task(Queue<Task> concreteQueue)   {
-    	
+    	uuid = UUID.randomUUID();
         double leastWCET= concreteQueue.peek().wcet;
         double leastPeriod = concreteQueue.peek().deadline;
         double leastOccu = concreteQueue.peek().occurance;
@@ -284,14 +290,21 @@ public final class Task implements Comparable<Task> {
     public void setResponseRatio(double o){
     	responseRatio = (o >=0) ? o : 0;
     }
-    
+
+    public boolean isSameTask(Task t) {
+        String uuidString1 = uuid.toString();
+        String uuidString2 = t.getUUID().toString();
+
+        return uuidString1.equals(uuidString2);
+    }
     
     public double getDeadline(){
         return deadline;
     }
     
     public String getLabel(){
-        return label;
+        String out = label.replace("t", "");
+        return out;
     }
     
     public double getWCET(){
@@ -317,10 +330,13 @@ public final class Task implements Comparable<Task> {
         return taskAutomata;
     } 
 
+    public String getUUID() {
+        return uuid.toString();
+    }
+
     public boolean isPeriodic() {
         return (period > 0) ? true : false; 
     }
-     
     
     @Override
     public int compareTo(Task o) {
@@ -331,11 +347,11 @@ public final class Task implements Comparable<Task> {
         return o.occurance < occurance ? 1 : -1;
     }*/
     
-    
     @Override
     public String toString() {
         return label+" "+(int)wcet+" "+(int)deadline+" "+(int)period;//+" O: "+occurance;
     }
+
     //@Override
     //public int compareTo(CustomerOrder o) {
     //    return o.orderId > this.orderId ? 1 : -1;

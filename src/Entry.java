@@ -1,10 +1,11 @@
 import java.util.LinkedList;
-import java.util.Stack;
 import java.util.Queue;
 
 public class Entry {
-    private Queue<Task[]> permutations;
-    private Task[] tasks;
+    private final Queue<Task[]> permutations;
+    private final Task[] tasks;
+    private int sameTask;
+    private int diffTask;
 
     public Entry() {
         permutations = new LinkedList<>();
@@ -19,16 +20,15 @@ public class Entry {
         }
     }
 
-    public void setAllPossiblePermutations() {
-        //Use a hashmap to store the permutations... Let the key be the permutation itself 
-    }
-
     public void getAllPossiblePermutations() {
+        sameTask = 0;
+        diffTask = 0;
         int numPermutations = factorial(tasks.length);
-        permutations.add(getPermutations(tasks, 0));
+        getPerm(tasks, 0);
         System.out.println("Expected number of permutations: " + numPermutations);
         System.out.println("Calculated number of permutations: " + permutations.size());
-
+        System.out.println("Same Task count: " + sameTask);
+        System.out.println("Different Task count: " + diffTask);
     }
 
     public String printTaskArray(Task[] currPerm) {
@@ -48,59 +48,41 @@ public class Entry {
         return out;
     }
 
-    public Task[] getPermutations(Task[] currPerm, int currIndex) {
-        int swapPositions = (currPerm.length) - currIndex;  // First one is 3 = size - 1
-        int startingIndex = currIndex;
-
-        // Base Case
-        if (currIndex >= currPerm.length && swapPositions == 0) {
-            return currPerm;
-        }
-
+    public void getPerm(Task[] currPerm, int currIndex) {
+        int swapPositions = (currPerm.length) - currIndex;
         System.out.println("== Level: " + currIndex);
         System.out.println("\tswapPositions: " + swapPositions);
         System.out.println("\tcurrPerm: " + printTaskArray(currPerm));
-        
-        //First it's the current perm...
-        for (int i = 0; i < currPerm.length; i++) {
-            System.out.println(String.format("Swapping i (%d) with currIndex(%d)", i, currIndex));
-            Task[] swapped = swapTasks(currPerm, i, currIndex);
-            System.out.println("After swapping: " + printTaskArray(swapped));
-            
-            //Pruning unnecessary branches
-            if (sameTaskSet(currPerm, swapped)) {
-                if (!permutations.contains(currPerm)) {   
-                    permutations.add(getPermutations(currPerm, (currIndex+1)));
-                }
-            } else {
-                if (!permutations.contains(currPerm)) {      //Replace this with a hashmap potentially for faster access? Current operation time = O(n); can be O(1)?
-                    permutations.add(getPermutations(currPerm, (currIndex+1)));
-                }
-    
-                if (!permutations.contains(swapped)) {
-                    permutations.add(getPermutations(swapped, (currIndex+1)));
-                }
+
+        // Base Case
+        if (swapPositions <= 1 && currIndex == (currPerm.length - 1)) {
+            //Add to permutation queue...
+            if (!permutations.contains(currPerm)) {
+                permutations.add(currPerm);
+                System.out.println("Added permutation: " + printTaskArray(currPerm));
             }
-
         }
+        
 
-        System.out.println("Adding permutation: " + printTaskArray(currPerm));
-
-        return currPerm;
+        for (int i = currIndex; i < currPerm.length; i++) {
+            Task[] swapped = swapTasks(currPerm, i, currIndex);
+            if (!permutations.contains(swapped)) {
+                getPerm(swapped, (currIndex+1));
+            }
+        }
     }
 
     public boolean sameTaskSet(Task[] t1, Task[] t2) {
         for (Task x: t1) {
             for (Task y: t2) {
                 if (!x.getUUID().equals(y.getUUID())) {
-                    System.out.println("Not the same task...")
+                    System.out.println("Not the same task...");
                     return false;
-                } else {
-                    System.out.println("Same Task");
                 }
             }
         }
-
+        
+        System.out.println("Same Task");
         return true;
     }
 

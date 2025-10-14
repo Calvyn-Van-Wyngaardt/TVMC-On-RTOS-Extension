@@ -306,6 +306,10 @@ public final class Task implements Comparable<Task> {
         String out = label.replace("t", "");
         return out;
     }
+
+    public boolean equals(Task t) {
+        return (t.getUUID().equals(getUUID()));
+    }
     
     public double getWCET(){
         return wcet;
@@ -337,6 +341,10 @@ public final class Task implements Comparable<Task> {
     public boolean isPeriodic() {
         return (period > 0) ? true : false; 
     }
+
+    public TimedAutomata getTimedAutomata() {
+        return taskAutomata;
+    }
     
     @Override
     public int compareTo(Task o) {
@@ -349,7 +357,7 @@ public final class Task implements Comparable<Task> {
     
     @Override
     public String toString() {
-        return label+" "+(int)wcet+" "+(int)deadline+" "+(int)period;//+" O: "+occurance;
+        return label + " " + (int)wcet + " " + (int)period + " " + (int)deadline;//+" O: "+occurance;
     }
 
     //@Override

@@ -87,7 +87,7 @@ public class Transition {
     
     @Override
     public String toString()  {
-        return "Transition: "+source.toString()+" --("+action.toString()+")-"+guardsChecked.toString()+"--> "+destination.toString();
+        return "Transition: " + source.toString() + " --(" + action.toString() + ")-" + guardsChecked.toString() + "-->\n" + destination.toString();
     }
     
     public void encodeCC(String s) {

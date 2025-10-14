@@ -303,17 +303,20 @@ public class ClockZone {
             if(c.getLabel().contains(cc.getClock().getLabel()))
                 x = clocks.indexOf(c);
         
-//        System.out.println("Indexes X: "+x+" Y: "+y+"  "+clocks.get(x).toString());
+        System.out.println("Indexes X: "+x+" Y: "+y+"  "+clocks.get(x).toString());
         double boundChanged = dbm[x][0].getBound();
+        System.out.println("Bound Changed to: " + boundChanged);
         if(dbm[y][x].getBound() + cc.getDiffBound().getBound() < 0)	{
             dbm[0][0].setBound(-1, true);
             System.out.println("CC -1:  "+cc.toString());
         }
         else if (cc.getDiffBound().getBound() < dbm[x][y].getBound())   {
+            System.out.println("cc.getDiffBound() (" + cc.getDiffBound().getBound() + ") < dbm[" + x + "][" + y + "].getBound() (" + dbm[x][y].getBound() + ") => True");
             dbm[x][y].setBound(cc.getDiffBound().getBound(), cc.getDiffBound().getLessEqualTo());
             //canonicalizing/closing Zone
-            System.out.println("CC OK:  "+cc.toString());
-            
+            System.out.println("CC OK:  " + cc.toString());
+            printDBM();
+
             for(int i=0;i<size;i++)
                 for(int j=0;j<size;j++)     {
                     if(dbm[i][x].getBound()+dbm[x][j].getBound() < dbm[i][j].getBound())
@@ -322,12 +325,13 @@ public class ClockZone {
                        dbm[i][j].setBound(dbm[i][y].getBound()+dbm[y][j].getBound(), true);
                 }
         }
+        
         System.out.println(dbm[x][0].getBound()+" and "+ boundChanged);
         
         if (dbm[x][0].getBound() < boundChanged)	
         	dbm[0][0].setBound(-1, true);
         
-        //printDBM();
+        printDBM();
     }
     
     public void free(int x)  {

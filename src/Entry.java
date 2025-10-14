@@ -3,7 +3,7 @@ import java.util.Queue;
 
 public class Entry {
     private final Queue<Task[]> permutations;
-    private final Task[] tasks;
+    private Task[] tasks;
     private int sameTask;
     private int diffTask;
 
@@ -18,6 +18,16 @@ public class Entry {
         for (int i = 0; i < t.length; i++) {
             tasks[i] = new Task(t[i]);
         }
+    }
+
+    public void addTask(Task t) {
+        Task[] newTaskArray = new Task[tasks.length + 1];
+        for (int i = 0; i < tasks.length; i++) {
+            newTaskArray[i] = tasks[i];
+        }
+
+        newTaskArray[tasks.length] = t;
+        tasks = newTaskArray;
     }
 
     public void getAllPossiblePermutations() {

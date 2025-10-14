@@ -62,20 +62,28 @@ public class TMVC {
 //        		m = abstractQ.size();
 //        	} 
 
-//        	System.out.println(readZone.getZoneLocation().toString()+ " CURRENT State");	
+       	System.out.println(readZone.getZoneLocation().toString() + " CURRENT State");	
 //        	System.out.println("WAIT SIZE Queue Size: "+ wait.size());
-
+        System.out.println("ReadZone current zone DBM[0][0]: " + readZone.getZone().getDBM()[0][0].getBound());
             if (readZone.getZoneLocation().getLabel().contains("Err") 
 //        		&& dbmValue < readZone.getZone().getDBM()[0][1].getBound() 
         		|| readZone.getZone().getDBM()[0][0].getBound() < 0 	 
         		)	{
-        		
+                
+        		ArrayList<ClockConstraint> cc = readZone.getZoneLocation().getInvariant();
+                Clock c1 = cc.get(0).getClock();
+                Clock c2 = cc.get(0).getClock2();
+                System.out.println("=> Zone Location Clock 1 Value: " + c1.getValue());
+                System.out.println("=> Zone Location Clock 2 Value: " + c2.getValue());
+                System.out.println("=> Clock Constraint: " + cc.get(0).getLabel() + "\nx: " + c1.getValue() + ", y: " + c2.getValue());
+
 //        		System.out.println("Iteration Ends - Return 0");
 //        		System.out.println("At State: "+readZone.getZoneLocation().getLabel()
 //        				+ " Zone Validity: "+ readZone.getZone().getDBM()[0][0].getBound() );
         		System.out.println(readZone.getZoneLocation().toString()+ "State With Err");
         		return 0;
         	}
+
  //       	dbmValue = readZone.getZone().getDBM()[0][1].getBound();
         	//(currentZone.getZone().zoneIntersection( new ClockZone(nta.getClocks(), nta.getStateSet().get(4).getInvariant()))) )
            
@@ -117,7 +125,7 @@ public class TMVC {
 //                    sZ.getZone().printDBM();
                     
                     timeline = sZ.getZone().getDBM()[1][0].getBound();
-                    
+
                     if(t.getDestinationState().getLabel().contains("Pause"))   {
                     //if(sZ.getZoneLocation().getLabel().contains("Pause"))   {
                         paused.add(sZ);
@@ -370,7 +378,9 @@ public class TMVC {
             return true;//return Unknown;
     }
     
-    
+    public double getTimeline() {
+        return timeline;
+    }
     
 }
 //

@@ -357,7 +357,8 @@ public final class Task implements Comparable<Task> {
     
     @Override
     public String toString() {
-        return label + " " + (int)wcet + " " + (int)period + " " + (int)deadline;//+" O: "+occurance;
+        return label + " " + (int)wcet + " " + (int)period + " " + (int)deadline;
+        //+" O: "+occurance;
     }
 
     //@Override

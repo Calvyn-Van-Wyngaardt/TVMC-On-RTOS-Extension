@@ -27,6 +27,48 @@ public class Subtasks {
         return (int) Math.ceil(t.getWCET() / timeslice);
     }
 
+    public double getMaxDeadline() {
+        double max = 0.0;
+
+        for (Task t: tasks) {
+            if (t.getDeadline() > max) {
+                max = t.getDeadline();
+            }
+        }
+
+        return max;
+    }
+
+    public double getTotalWCET() {
+        double total = 0.0;
+
+        for (Task t: tasks) {
+            total += t.getWCET();
+        }
+
+        return total;
+    }
+
+    // Would be better if there was a dedicated Scheduler class...
+    public double getNewPeriod(Task t) {
+        //Do we take into account our once-off tasks too?
+        //Or do we dynamically re-allocate the space to the periodic subtasks?
+            // Would only matter for the starting subtasks... 
+        double newPeriod = getTotalWCET();
+
+        for (Task task: tasks) {
+            if (task.isPeriodic()) {
+                if (!t.isSameTask(task)) {
+                    newPeriod += task.getWCET();
+                } else {
+                    break;
+                }
+            }
+        }
+
+        return newPeriod;
+    }
+
     // Might use these if the task model changes to relative time...
     // public int calculatePeriod(Task t) {
     //     //
@@ -50,7 +92,7 @@ public class Subtasks {
 
     public void createSubTasks() {
         int defaultOccurrance = 0;
-        double totalDeadline = 0;
+        double totalDeadline = getMaxDeadline();
         double totalPeriod = 0;
         ArrayList<Integer> numSubtasksPerTask = new ArrayList<>();
         
@@ -74,19 +116,34 @@ public class Subtasks {
                     System.out.println("Current Sub Task: " + (currSubTask+1));
                     System.out.println("Current Task: " + (currTaskIndex+1));
                     System.out.println("Number of SubTasksPerTask size: " + numSubtasksPerTask.size());
+
                     if (currSubTask < numSubtasksPerTask.get(currTaskIndex) - 1) {
-                        subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, currSubTask + 1), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
+                        if (currTask.isPeriodic()) {
+                            subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, currSubTask + 1), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
+                        } else {
+                            subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, currSubTask + 1), timeslice, 0, (totalDeadline + timeslice), defaultOccurrance));
+                        }
+
                         totalDeadline += timeslice;
                         totalPeriod += timeslice;
                     } else {
                         // If the WCET cannot be divided without a remainder, the remainder value is assigned to last subtask's WCET...
                         int remainder = (int) (currTask.getWCET() % timeslice);
                         if (remainder > 0) {
-                            subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), remainder, (totalPeriod + remainder), (totalDeadline + remainder), defaultOccurrance));
+                            if (currTask.isPeriodic()) {
+                                subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), remainder, (totalPeriod + remainder), (totalDeadline + remainder), defaultOccurrance));
+                            } else {
+                                subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), remainder, 0, (totalDeadline + remainder), defaultOccurrance));
+                            }
+
                             totalDeadline += remainder;
                             totalPeriod += remainder;
                         } else {
-                            subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
+                            if (currTask.isPeriodic()) {
+                                subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
+                            } else {
+                                subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), timeslice, 0, (totalDeadline + timeslice), defaultOccurrance));
+                            }
                             totalDeadline += timeslice;
                             totalPeriod += timeslice;
                         }
@@ -96,6 +153,11 @@ public class Subtasks {
                 }
 
             }
+        }
+
+        //Update period values 
+        for (Task st: subtasks) {
+            st.setPeriod(getNewPeriod(st));
         }
     }
 

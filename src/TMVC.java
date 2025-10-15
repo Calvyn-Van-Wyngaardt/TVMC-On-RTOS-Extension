@@ -70,12 +70,12 @@ public class TMVC {
         		|| readZone.getZone().getDBM()[0][0].getBound() < 0 	 
         		)	{
                 
-        		ArrayList<ClockConstraint> cc = readZone.getZoneLocation().getInvariant();
-                Clock c1 = cc.get(0).getClock();
-                Clock c2 = cc.get(0).getClock2();
-                System.out.println("=> Zone Location Clock 1 Value: " + c1.getValue());
-                System.out.println("=> Zone Location Clock 2 Value: " + c2.getValue());
-                System.out.println("=> Clock Constraint: " + cc.get(0).getLabel() + "\nx: " + c1.getValue() + ", y: " + c2.getValue());
+        		// ArrayList<ClockConstraint> cc = readZone.getZoneLocation().getInvariant();
+                // Clock c1 = cc.get(0).getClock();
+                // Clock c2 = cc.get(0).getClock2();
+                // System.out.println("=> Zone Location Clock 1 Value: " + c1.getValue());
+                // System.out.println("=> Zone Location Clock 2 Value: " + c2.getValue());
+                // System.out.println("=> Clock Constraint: " + cc.get(0).getLabel() + "\nx: " + c1.getValue() + ", y: " + c2.getValue());
 
 //        		System.out.println("Iteration Ends - Return 0");
 //        		System.out.println("At State: "+readZone.getZoneLocation().getLabel()

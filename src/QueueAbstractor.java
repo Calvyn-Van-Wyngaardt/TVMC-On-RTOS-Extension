@@ -50,7 +50,7 @@ public final class QueueAbstractor {
             if (tk.getPeriod() > 0) {
                 // Check if task is already in hashmap...
                 if (!originalDeadlineValues.containsKey(tk.getLabel())) {
-                    originalDeadlineValues.put(tk.getLabel(), tk.getPeriod());
+                    originalDeadlineValues.put(tk.getLabel(), tk.getDeadline());
                 }
             }
         }

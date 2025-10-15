@@ -100,20 +100,20 @@ public class StateZone {
     	//System.out.println("Input TRANS: "+edge.toString());
     	//System.out.println("Input ZONE: "+this.toString());
         
-   	System.out.println("ZONE BEFORE GUARD END with EDGE:\n" + edge.toString());
-   	zone.printDBM();
+   	// System.out.println("ZONE BEFORE GUARD END with EDGE:\n" + edge.toString());
+   	// zone.printDBM();
         zone.and(edge.getGuard());
 
-       System.out.println("ZONE AFTER AND WITH GUARD/ BEFORE RESET: "+edge.getGuard().size());
-       zone.printDBM();
+    //    System.out.println("ZONE AFTER AND WITH GUARD/ BEFORE RESET: "+edge.getGuard().size());
+    //    zone.printDBM();
 
         zone.reset(edge.getClockResetS(), 0);
-       System.out.println("ZONE AFTER RESET / BEFORE AND WITH DESTINATION: ");
-       zone.printDBM();
+    //    System.out.println("ZONE AFTER RESET / BEFORE AND WITH DESTINATION: ");
+    //    zone.printDBM();
         
         zone.and(edge.getDestinationState().getInvariant());
-       System.out.println("ZONE AFTER AND WITH DESTINATION INV / ZONE LOCATION IS NOW EDGE DEST: ");
-       zone.printDBM();
+    //    System.out.println("ZONE AFTER AND WITH DESTINATION INV / ZONE LOCATION IS NOW EDGE DEST: ");
+    //    zone.printDBM();
         zoneLocation = edge.getDestinationState();
         
         
@@ -134,14 +134,14 @@ public class StateZone {
         }
         for(ClockConstraint x:cc)
            System.out.println("Inv CCs: "+x.toString());
-       System.out.println("BEFORE ELAPSE: ");
-       zone.printDBM();
+    //    System.out.println("BEFORE ELAPSE: ");
+    //    zone.printDBM();
         zone.elapseUp(m);
-       System.out.println("AFTER ELAPSE / BEFORE AND: ");
-       zone.printDBM();
+    //    System.out.println("AFTER ELAPSE / BEFORE AND: ");
+    //    zone.printDBM();
         zone.and(cc);
-       System.out.println("AFTER AND: ");
-       zone.printDBM();
+    //    System.out.println("AFTER AND: ");
+    //    zone.printDBM();
     } 
     
     

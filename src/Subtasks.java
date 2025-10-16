@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 public class Subtasks {
@@ -8,12 +9,14 @@ public class Subtasks {
     private ArrayList<Task> tasks;
     private ArrayList<Task> subtasks;
     private double timeslice;
+    private HashMap<String, Double> timeBetweenSubTasks;
 
     public Subtasks() {
         taskSetLabel = "EMPTY";
         tasks = new ArrayList<>();
         subtasks = new ArrayList<>();
         timeslice = 0;
+        timeBetweenSubTasks = new HashMap<>();
     }
 
     public Subtasks(TaskGenerator taskGen, double t) {
@@ -21,6 +24,24 @@ public class Subtasks {
         tasks = taskGen.getTaskSet();
         subtasks = new ArrayList<>();
         timeslice = t;
+        timeBetweenSubTasks = new HashMap<>();
+    }
+
+    public void calculateTimeBetweenSubTasks() {
+        for (Task st: subtasks) {
+            System.out.println("Current task to calculate: " + st.toString());
+            if (st.isPeriodic()) {
+                double timebetween = st.getPeriod() - st.getDeadline();
+                System.out.println("Period: " + st.getPeriod() + "; Deadline: " + st.getDeadline() + " = " + timebetween);
+                timeBetweenSubTasks.put(st.getLabel(), timebetween);
+            } else {
+                System.out.println("Skipping...");
+            }
+        }
+    }
+
+    public HashMap<String, Double> getTimeBetweenSubTasks() {
+        return timeBetweenSubTasks;
     }
 
     public int calculateNumSubtasks(Task t) {
@@ -57,13 +78,13 @@ public class Subtasks {
         double newPeriod = getTotalWCET();
 
         for (Task st: subtasks) {
-            if (st.isPeriodic()) {
+            // if (st.isPeriodic()) {
                 if (!t.isSameTask(st)) {
                     newPeriod += st.getWCET();
                 } else {
                     break;
                 }
-            }
+            // }
         }
 
         return newPeriod;
@@ -158,10 +179,9 @@ public class Subtasks {
             }
         }
 
-        //Update period values 
-        // for (Task st: subtasks) {
-        //     st.setPeriod(getNewPeriod(st));
-        // }
+
+        // For later usage
+        calculateTimeBetweenSubTasks();
     }
 
     public ArrayList<Integer> getNumSubtasksForTaskset(ArrayList<Task> ts) {

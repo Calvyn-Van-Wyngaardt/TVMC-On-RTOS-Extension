@@ -31,6 +31,8 @@ public final class QueueAbstractor {
     private boolean patternDetected;
     private boolean periodicTasksPresent = false;
     private HashMap<String, Double> originalDeadlineValues;
+    private HashMap<String, Double> originalPeriodValues;
+    private TaskGenerator taskGen;
     
     public QueueAbstractor(int k, boolean t, TaskGenerator tg, int procSz)    {
         tempPool = new LinkedList<>();
@@ -39,7 +41,8 @@ public final class QueueAbstractor {
     	patternDetected = false;
         tvModelChecker = new TMVC();
         processorSet = generateProcessorSet(procSz);
-        //concreteTaskQueue = generateRandomConcreteQueue(tg.getTaskSet().size());
+        originalPeriodValues = new HashMap<>();
+    //concreteTaskQueue = generateRandomConcreteQueue(tg.getTaskSet().size());
         concreteTaskQueue = new LinkedList<>();
         iterationEntries = new LinkedList<>();
         
@@ -74,10 +77,12 @@ public final class QueueAbstractor {
         // new Task("100",100,100,100,100);
         interval = setInterval(k);
         label = tg.getLabel();
+        taskGen = tg;
     }
     
     public QueueAbstractor()    {
         tempPool = new LinkedList<>();
+        originalPeriodValues = new HashMap<>();
         originalDeadlineValues = new HashMap<>();
         repeatingTasks = new LinkedList<>();
     	patternDetected = false;
@@ -204,6 +209,7 @@ public final class QueueAbstractor {
         double abstractZn = 0.0; //new ClockZone();
         boolean poolReady = false;
         int originalConcreteQueueSize = concreteTaskQueue.size();
+        int tasksProcessed = 0;
 
         System.out.println("QueueAbstractor - [queueAbstraction]: Entering while(concreteTaskQueue != empty)");
         while((!concreteTaskQueue.isEmpty() || !tempPool.isEmpty()) && !patternDetected) {
@@ -219,9 +225,10 @@ public final class QueueAbstractor {
             if (concreteTaskQueue.isEmpty()) 
             {
                 tvModelChecker.addToTimeline(1);
-                for (Task t: tempPool) {
-                    t.getTimedAutomata().getClocks().get(0).update(1);
-                }
+                System.out.println("\t\tAdding 1 time unit to timeline");
+                // for (Task t: tempPool) {
+                //     t.getTimedAutomata().getClocks().get(0).update(1);
+                // }
             } 
             else 
             {
@@ -236,13 +243,17 @@ public final class QueueAbstractor {
                 //Check for ready tasks and add them to the concreteQueue...
                 for (int i = 0; i < tempPool.size(); i++) {
                     Task curr = tempPool.get(i);
-                    System.out.println("\t" + curr.toString());
                     // double currClockVal = curr.getTimedAutomata().getClocks().get(0).getValue();
                     // System.out.println(String.format("Task %s\n\tClock Value: %f\n\tPeriod Value: %f", tempPool.get(i).toString(), currClockVal, curr.getPeriod()));
                     
+                    // This is the problem... 
+                    // preset period points?
                     if (currentTime >= curr.getPeriod()) {
                         // curr.getTimedAutomata().resetAllClocks();
-                       
+                        
+                        System.out.println("\tThis task: " + curr.toString() + " is apparently ready to move?");
+                        System.out.println("\tCurrentTime: " + currentTime);
+                        System.out.println("\tcurr.getPeriod: " + currentTime);
                         tempPool.remove(i);
                         concreteTaskQueue.add(curr);
                         currEntry.addTask(curr);
@@ -260,59 +271,63 @@ public final class QueueAbstractor {
                             //Dynamically update deadline values for task...
                             //Make sure we go throught the concreteQueue once first. Then we deal with the periodic tasks being added.
                             //TODO: Where are the periods of tasks being updated?
-                            if (iteration >= originalConcreteQueueSize) {
+                            System.out.println("Iteration: " + iteration);
+                            System.out.println("Tasks Processed: " + tasksProcessed);                            
+                            System.out.println("originalConcreteQueueSize: " + originalConcreteQueueSize);
+                            if (tasksProcessed >= originalConcreteQueueSize) {
                                 Task newTask = new Task(t);
                                 //In this one we modify the value before checking takes place
                                 // Double deadlineValue = originalDeadlineValues.get(t.getLabel());
-                                // Double deadlineValue = t.getDeadline();
-                                Double originalPeriodValue = t.getPeriod();
-                                System.out.println(String.format("Adding original period (%f) to deadline (%f) for task %s: ", originalPeriodValue, deadlineValue, t.getLabel()));
+                                // Double deadlineValue = newTask.getDeadline();
+                                // System.out.println(String.format("Adding original period (%f) to deadline (%f) for task %s: ", originalPeriodValue, deadlineValue, t.getLabel()));
+                                // System.out.println(String.format("Adding (period - wcet = %f - %f) to current deadline (%f) for task %s: ", newTask.getPeriod(), newTask.getWCET(), newTask.getDeadline(), t.getLabel()));
+                                System.out.println("Old deadline: " + newTask.getDeadline());
                                 // t.setDeadline(originalPeriodValue + deadlineValue);
-                                newTask.setDeadline(originalPeriodValue + newTask.getWCET());
+                                // newTask.setPeriod(newTask.getPeriod() + originalPeriodValue);
+                                HashMap<String, Double> timeBetween = taskGen.getTimeBetweenSubTasks();
+                                Double timeToAdd = 0.0;
+                                
+                                Collection<Double> values = timeBetween.values();
+                                
+                                for (String k: timeBetween.keySet()) {
+                                    if (k.equals(newTask.getLabel())) {
+                                        timeToAdd = timeBetween.get(k);
+                                        break;
+                                    }
+                                }
+                                timeToAdd += newTask.getWCET();
+                                // newTask.setDeadline(newTask.getDeadline() + (newTask.getPeriod() - newTask.getWCET()));
+                                newTask.setDeadline(newTask.getDeadline() + timeToAdd);
+                                System.out.println("New deadline: " + newTask.getDeadline());
+                                // System.out.println("Difference: " + newTask.getPeriod() + ((int) (newTask.getPeriod() - newTask.getWCET())));
+                                System.out.println("Time Added: " + timeToAdd);
                                 System.out.println("\t- " + newTask.toString());
+                                newTask.setuuid(t.getUUIDObject());
+                                newTask.setTaskAutomata();
+                                
                                 tempPool.add(newTask);
                                 repeatingTasks.add(newTask);
                             } else {
                                 Task newTask = new Task(t);
                                 // In this one we modify the value before placing it into the tempQueue to be checked.
-                                Double deadlineValue = originalDeadlineValues.get(newTask.getLabel());
+                                // Double deadlineValue = originalDeadlineValues.get(newTask.getLabel());
                                 Double originalPeriodValue = newTask.getPeriod();
-                                System.out.println(String.format("Adding original period (%f) to deadline (%f) for task %s: ", originalPeriodValue, deadlineValue, newTask.getLabel()));
+                                originalPeriodValues.put(newTask.getLabel(), originalPeriodValue);
+                                // System.out.println(String.format("Adding original period (%f) to deadline (%f) for task %s: ", originalPeriodValue, deadlineValue, newTask.getLabel()));
+                                System.out.println(String.format("Adding wcet (%f) to period (%f) for task %s: ", newTask.getWCET(), originalPeriodValue, t.getLabel()));
+                                System.out.println("Old deadline: " + newTask.getDeadline());
                                 
                                 // newTask.setDeadline(originalPeriodValue + (deadlineValue - tvModelChecker.getTimeline()));
                                 // We know it'll never change, so just add wcet...
                                 newTask.setDeadline(originalPeriodValue + newTask.getWCET());
+                                System.out.println("New deadline: " + newTask.getDeadline());
                                 System.out.println("\t- " + newTask.toString());
                                 newTask.setuuid(t.getUUIDObject());
+                                newTask.setTaskAutomata();
+                                
                                 tempPool.add(newTask);
                                 repeatingTasks.add(newTask);
                             }
-
-                            // if (iteration > 0) {
-                            //     //In this one we modify the value before checking takes place
-                            //     // Double deadlineValue = originalDeadlineValues.get(t.getLabel());
-                            //     Double deadlineValue = t.getDeadline();
-                            //     Double originalPeriodValue = t.getPeriod();
-                            //     System.out.println(String.format("Adding original period (%f) to deadline (%f) for task %s: ", originalPeriodValue, deadlineValue, t.getLabel()));
-                            //     t.setDeadline(originalPeriodValue + deadlineValue);
-                            //     System.out.println("\t- " + t.toString());
-                            //     tempPool.add(t);
-                            //     repeatingTasks.add(t);
-                            // } else {
-                            //     Task newTask = new Task(t);
-                            //     // In this one we modify the value before placing it into the tempQueue to be checked.
-                            //     Double deadlineValue = originalDeadlineValues.get(newTask.getLabel());
-                            //     Double originalPeriodValue = newTask.getPeriod();
-                            //     System.out.println(String.format("Adding original period (%f) to deadline (%f) for task %s: ", originalPeriodValue, deadlineValue, newTask.getLabel()));
-                            //     newTask.setDeadline(originalPeriodValue + deadlineValue);
-                            //     System.out.println("\t- " + newTask.toString());
-                            //     newTask.setuuid(t.getUUIDObject());
-                            //     tempPool.add(newTask);
-                            //     repeatingTasks.add(newTask);
-                            // } 
-                            
-                            // tempPool.add(newTask);
-                            // repeatingTasks.add(newTask);
                         }
                     }
                 } 
@@ -335,21 +350,12 @@ public final class QueueAbstractor {
                 System.out.println("Time elapsed: " + timeElapsed);
                 iteration++;
 
-                // if (iteration > 1) {
-                //     // Add time elapsed to each clock in tempQueue
-                //     for (int i = 0; i < tempPool.size(); i++) {
-                //         Task curr = tempPool.get(i);
-                //         System.out.println("Task being modified: " + curr.toString());
-                //         Clock c = curr.getTimedAutomata().getClocks().get(0);
-                //         System.out.println("Clock value was: " + c.getValue());
-                //         curr.getTimedAutomata().getClocks().get(0).update(timeElapsed);
-                //         Clock updatedClock = curr.getTimedAutomata().getClocks().get(0);
-                //         System.out.println("Clock value is now: " + updatedClock.getValue());
-                //     }
-                // } else {
+                for (int i = 0 ; i < interval; i++) {
+                    if (i < concreteTaskQueue.size()) {
+                        tasksProcessed += 1;
+                    }
+                }
 
-                // }
-    
                 writeOnPath("Clocks= "+NTA.getClocks().size()+" States= "+NTA.getStateSet().size()+" Trans="+NTA.getTransitions().size()+"; \n", "Output"+label+".txt"); 
     
                 if(threeValue==0)  {

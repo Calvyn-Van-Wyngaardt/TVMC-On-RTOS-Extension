@@ -212,7 +212,7 @@ public final class QueueAbstractor {
         int tasksProcessed = 0;
 
         System.out.println("QueueAbstractor - [queueAbstraction]: Entering while(concreteTaskQueue != empty)");
-        while((!concreteTaskQueue.isEmpty() || !tempPool.isEmpty()) && !patternDetected) {
+        while((!concreteTaskQueue.isEmpty() || !tempPool.isEmpty()) && !patternDetected && tasksProcessed < 50) {
         	automataArray.clear();
             Double currentTime = tvModelChecker.getTimeline();
 
@@ -220,6 +220,27 @@ public final class QueueAbstractor {
             for (Task t: concreteTaskQueue) {
                 System.out.println("- " + t.toString());
             }
+
+             //Check for ready tasks and add them to the concreteQueue...
+                for (int i = 0; i < tempPool.size(); i++) {
+                    Task curr = tempPool.get(i);
+                    // double currClockVal = curr.getTimedAutomata().getClocks().get(0).getValue();
+                    // System.out.println(String.format("Task %s\n\tClock Value: %f\n\tPeriod Value: %f", tempPool.get(i).toString(), currClockVal, curr.getPeriod()));
+                    
+                    // This is the problem... 
+                    // preset period points?
+                    if (currentTime >= curr.getPeriod()) {
+                        // curr.getTimedAutomata().resetAllClocks();
+                        
+                        System.out.println("\tThis task: " + curr.toString() + " is apparently ready to move?");
+                        System.out.println("\tCurrentTime: " + currentTime);
+                        System.out.println("\tcurr.getPeriod: " + currentTime);
+                        tempPool.remove(i);
+                        concreteTaskQueue.add(curr);
+                        // currEntry.addTask(curr);
+                        // poolReady = true;
+                    }
+                }
 
             //If there are no ready tasks to check... then we increase timeline & tasks in queue...
             if (concreteTaskQueue.isEmpty()) 
@@ -240,26 +261,26 @@ public final class QueueAbstractor {
                     System.out.println("| NONE");
                 }
 
-                //Check for ready tasks and add them to the concreteQueue...
-                for (int i = 0; i < tempPool.size(); i++) {
-                    Task curr = tempPool.get(i);
-                    // double currClockVal = curr.getTimedAutomata().getClocks().get(0).getValue();
-                    // System.out.println(String.format("Task %s\n\tClock Value: %f\n\tPeriod Value: %f", tempPool.get(i).toString(), currClockVal, curr.getPeriod()));
+                // //Check for ready tasks and add them to the concreteQueue...
+                // for (int i = 0; i < tempPool.size(); i++) {
+                //     Task curr = tempPool.get(i);
+                //     // double currClockVal = curr.getTimedAutomata().getClocks().get(0).getValue();
+                //     // System.out.println(String.format("Task %s\n\tClock Value: %f\n\tPeriod Value: %f", tempPool.get(i).toString(), currClockVal, curr.getPeriod()));
                     
-                    // This is the problem... 
-                    // preset period points?
-                    if (currentTime >= curr.getPeriod()) {
-                        // curr.getTimedAutomata().resetAllClocks();
+                //     // This is the problem... 
+                //     // preset period points?
+                //     if (currentTime >= curr.getPeriod()) {
+                //         // curr.getTimedAutomata().resetAllClocks();
                         
-                        System.out.println("\tThis task: " + curr.toString() + " is apparently ready to move?");
-                        System.out.println("\tCurrentTime: " + currentTime);
-                        System.out.println("\tcurr.getPeriod: " + currentTime);
-                        tempPool.remove(i);
-                        concreteTaskQueue.add(curr);
-                        currEntry.addTask(curr);
-                        // poolReady = true;
-                    }
-                }
+                //         System.out.println("\tThis task: " + curr.toString() + " is apparently ready to move?");
+                //         System.out.println("\tCurrentTime: " + currentTime);
+                //         System.out.println("\tcurr.getPeriod: " + currentTime);
+                //         tempPool.remove(i);
+                //         concreteTaskQueue.add(curr);
+                //         currEntry.addTask(curr);
+                //         // poolReady = true;
+                //     }
+                // }
 
                 //This updates the deadline to be correct for the next iteration...
                 System.out.println("Moving the following tasks to temp pool. Updated Deadline.");
@@ -298,6 +319,7 @@ public final class QueueAbstractor {
                                 timeToAdd += newTask.getWCET();
                                 // newTask.setDeadline(newTask.getDeadline() + (newTask.getPeriod() - newTask.getWCET()));
                                 newTask.setDeadline(newTask.getDeadline() + timeToAdd);
+                                newTask.setPeriod(newTask.getPeriod() + timeToAdd);
                                 System.out.println("New deadline: " + newTask.getDeadline());
                                 // System.out.println("Difference: " + newTask.getPeriod() + ((int) (newTask.getPeriod() - newTask.getWCET())));
                                 System.out.println("Time Added: " + timeToAdd);
@@ -378,6 +400,14 @@ public final class QueueAbstractor {
             }
         }
 
+        if (tasksProcessed >= 50) {
+            System.out.println("=============================");
+            System.out.println("Chain of all repeated tasks: ");
+            for (Task t: repeatingTasks) {
+                System.out.println("\t- " + t.toString());
+            }
+        }
+
         System.out.println("QueueAbstractor - [queueAbstraction]: ConcreteQueue processed with no failed schedule");
         System.out.println("QueueAbstractor - [queueAbstraction]: Schedulability property: Schedulable");
  
@@ -391,43 +421,80 @@ public final class QueueAbstractor {
     }
 
     public boolean findPattern() {
+        System.out.println("QueueAbstractor - [findPattern]: Setting up indices...");
+        System.out.println("QueueAbstractor - [findPattern]: Num repeating tasks: " + repeatingTasks.size());
+
         Task firstTask = repeatingTasks.get(0);
         Stack<Integer> indices = new Stack<>();
         Integer[] indicesArr = new Integer[1];
-
+        
         for (int i = 0; i < repeatingTasks.size(); i++) {
-            if (firstTask.equals(repeatingTasks.get(i))) {
+            Task curr = repeatingTasks.get(i);
+            System.out.println("QueueAbstractor - [findPattern]: " + firstTask.getLabel() + " == " + curr.getLabel() + "?");
+            if (firstTask.getLabel().equals(repeatingTasks.get(i).getLabel())) {
                 indices.push(i);
+                System.out.println("QueueAbstractor - [findPattern]: true");
+            }
+            else {
+                System.out.println("QueueAbstractor - [findPattern]: false");
             }
         }
+        
+        System.out.println("QueueAbstractor - [findPattern]: Indices Stack Size:" + repeatingTasks.size());
+        System.out.println("QueueAbstractor - [findPattern]: Indices Array: ");
+        String indicesString = "[";
+        for (Integer i: indices) {
+            indicesString += " " + i;
+        }
+        indicesString += "]";
+        System.out.println(indicesString);
 
+        //Find a way to also iterate over all the indices to compare not just the first element
         indicesArr = new Integer[indices.size()];
         for (int i = 0; i < indices.size(); i++) {
             indicesArr[i] = indices.get(i);
         }
+        
+        //Keeps track of indicesIndex...
+        int k = 0;
 
-        for (int i = 1 ; i < indices.size(); i++) {
+        // 'k' is the index tracking the current Pos in indices array for 1st element to be compared.
+        for (k = 0; k < indicesArr.length; k++) {
+            for (int i = 1 ; i < indices.size(); i++) {
                 //If the first task matches a task using indices
                 int size = indicesArr[i];
-
-                for (int j = 1; j < size; j++) {
-                    if ((j < size) && (size + j) < repeatingTasks.size()) {
-                        if (repeatingTasks.get(0+j).equals(repeatingTasks.get(size + j))) {
-                            // patternLength += 1;
-                            if (j == size - 1) {    //Last one checked and matches pattern
-                                //One final check... 
-                                // for (int k = 0; k < j; k++) {
-                                //     if ((k + j) < repeatingTasks.size()) {
-                                //         if (repeatingTasks.get(k+j).equals(repeatingTasks.get()))
-                                //     }
-                                // }
-                                return true;
+                System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",i,k) + ") Size: " + size);
+                
+                if (k != i) {
+                    System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",i,k) + ") Comparing elements: (" + repeatingTasks.get(indicesArr[k]) + ")[" + indicesArr[k] + "] with " + repeatingTasks.get(indicesArr[i])+ ")[" + indicesArr[i] + "]");
+                    for (int j = 1; j < size; j++) {
+                        if ((j < size) && (size + j) < repeatingTasks.size()) {
+                            System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",i,k) + ") Comparing (" + repeatingTasks.get(indicesArr[k]+j).toString() + ") to (" + repeatingTasks.get(size + j) + ")");
+                            System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",i,k) + ") Match: " + repeatingTasks.get(indicesArr[k]+j).equals(repeatingTasks.get(size + j)));
+                            if (repeatingTasks.get(indicesArr[k]+j).equals(repeatingTasks.get(size + j))) {
+                                // patternLength += 1;
+                                if (j == size - 1) {    //Last one checked and matches pattern
+                                    //One final check... 
+                                    // for (int k = 0; k < j; k++) {
+                                    //     if ((k + j) < repeatingTasks.size()) {
+                                    //         if (repeatingTasks.get(k+j).equals(repeatingTasks.get()))
+                                    //     }
+                                    // }
+                                    System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",i,k) + ") $$$- MATCH FOUND -$$$");
+                                    return true;
+                                }
+                            } else {
+                                System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",i,k) + ") NO MATCH!");
+                                break;      //No match
                             }
-                        } else {
-                            break;      //No match
                         }
                     }
+                } else {
+                    System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",i,k) + ") Skipping... ");
+
                 }
+            }
+
         }
 
         //TODO: Add check for LCM and expand 

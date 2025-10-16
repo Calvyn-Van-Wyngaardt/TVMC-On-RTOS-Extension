@@ -50,6 +50,7 @@ public final class QueueAbstractor {
             if (tk.getPeriod() > 0) {
                 // Check if task is already in hashmap...
                 if (!originalDeadlineValues.containsKey(tk.getLabel())) {
+                    System.out.println(String.format("Adding deadline %f to task %s", tk.getDeadline(), tk.getLabel()));
                     originalDeadlineValues.put(tk.getLabel(), tk.getDeadline());
                 }
             }
@@ -145,6 +146,9 @@ public final class QueueAbstractor {
 
                 //Update clock value to current period value...
                 Task newTask = new Task(p);
+
+                // Change this tasks' deadline & period value.
+                // The period value should change
                 // Double deadlineValue = originalDeadlineValues.get(newTask.getLabel());
                 // System.out.println(String.format("Adding timeline (%f) to deadline (%f) for task %s", tvModelChecker.getTimeline(), deadlineValue, newTask.getLabel()));
                 // newTask.setDeadline(tvModelChecker.getTimeline() + deadlineValue);
@@ -213,71 +217,85 @@ public final class QueueAbstractor {
                 System.out.println("- " + t.toString());
             }
 
-
-            Entry currEntry = new Entry();
-            System.out.println("\tTemp pool size: " + tempPool.size());
-            for (int i = 0; i < tempPool.size(); i++) {
-                Task curr = tempPool.get(i);
-                double currClockVal = curr.getTimedAutomata().getClocks().get(0).getValue();
-                System.out.println(String.format("Task %s\n\tClock Value: %f\n\tPeriod Value: %f", tempPool.get(i).toString(), currClockVal, curr.getPeriod()));
-                
-                //Check to see if any tasks are ready to be moved into concreteQueue
-                if (currClockVal >= curr.getPeriod()) {
-                    // System.out.println("Clock values before reset:\n");
-                    // for (Clock c: curr.getTimedAutomata().getClocks()) {
-                        // System.out.println("\tClock: " + c.getValue());
-                    // }
-                    curr.getTimedAutomata().resetAllClocks();
-                    
-                    // System.out.println("Clock values after reset:\n");
-                    // for (Clock c: curr.getTimedAutomata().getClocks()) {
-                        // System.out.println("\tClock: " + c.getValue());
-                    // }
-
-                    tempPool.remove(i);
-                    concreteTaskQueue.add(curr);
-                    currEntry.addTask(curr);
-                    poolReady = true;
+            //If there are no ready tasks to check... then we increase timeline & tasks in queue...
+            if (concreteTaskQueue.isEmpty()) {
+                tvModelChecker.addToTimeline(1);
+                for (Task t: tempPool) {
+                    t.getTimedAutomata().getClocks().get(0).update(1);
                 }
-            }
-
-            //Updates every task's clock values in the pool if no task is ready...
-            if (!poolReady) {
+            } else {
+                //Else, there may be some tasks that are ready to be checked...
+                Entry currEntry = new Entry();
+                System.out.println("\tTemp pool size: " + tempPool.size());
+    
+                //Check for ready tasks and add them to the concreteQueue...
                 for (int i = 0; i < tempPool.size(); i++) {
                     Task curr = tempPool.get(i);
-                    curr.getTimedAutomata().getClocks().get(0).update(1);
+                    double currClockVal = curr.getTimedAutomata().getClocks().get(0).getValue();
+                    System.out.println(String.format("Task %s\n\tClock Value: %f\n\tPeriod Value: %f", tempPool.get(i).toString(), currClockVal, curr.getPeriod()));
+                    
+                    if (currClockVal >= curr.getPeriod()) {
+                        curr.getTimedAutomata().resetAllClocks();
+                       
+                        tempPool.remove(i);
+                        concreteTaskQueue.add(curr);
+                        currEntry.addTask(curr);
+                        // poolReady = true;
+                    }
                 }
+
+                //...
+                System.out.println("Modified Concrete Queue:");
+                for (Task t: concreteTaskQueue) {
+                    if (t.isPeriodic()) {
+                        //Dynamically update deadline values for task...
+                        Double deadlineValue = originalDeadlineValues.get(t.getLabel());
+                        System.out.println(String.format("Adding timeline (%f) to deadline (%f) for task %s: ", tvModelChecker.getTimeline(), deadlineValue, t.getLabel()));
+                        System.out.println("\t- " + t.toString());
+                        t.setDeadline(tvModelChecker.getTimeline() + deadlineValue);
+                        // tempPool.add(t);
+                        repeatingTasks.add(t);
+                    }
+                    
+                }
+    
+                generateAbstractQueue(abstractZn);
+                TimedAutomata NTA;
+                NTA = new TimedAutomata(automataArray.get(0));
+                
+                for(int i=1;i<automataArray.size();++i) {
+                    TimedAutomata t = automataArray.get(i);
+                    
+                    NTA = NTA.addTimedAutomata(t);
+                }            
+    
+                threeValue = tvModelChecker.threeVReachability(NTA,abstractTaskQueue, counterPath); 
+    
+                abstractZn = tvModelChecker.timeline;
+                double timeElapsed = tvModelChecker.getElapsedTime();
+                System.out.println("Timeline: " + abstractZn);
+                System.out.println("Time elapsed: " + timeElapsed);
+                iteration++;
+
+
+
             }
 
-            System.out.println("Modified Concrete Queue:");
-            for (Task t: concreteTaskQueue) {
-                if (t.isPeriodic()) {
-                    //Dynamically update deadline values for task...
-                    Double deadlineValue = originalDeadlineValues.get(t.getLabel());
-                    System.out.println(String.format("Adding timeline (%f) to deadline (%f) for task %s", tvModelChecker.getTimeline(), deadlineValue, t.getLabel()));
-                    t.setDeadline(tvModelChecker.getTimeline() + deadlineValue);
-                    tempPool.add(t);
-                    repeatingTasks.add(t);
-                }
-                
-                System.out.println("- " + t.toString());
+
+
+
+            
+            // Add time elapsed to each clock in tempQueue
+            for (int i = 0; i < tempPool.size(); i++) {
+                Task curr = tempPool.get(i);
+                System.out.println("Task being modified: " + curr.toString());
+                Clock c = curr.getTimedAutomata().getClocks().get(0);
+                System.out.println("Clock value was: " + c.getValue());
+                curr.getTimedAutomata().getClocks().get(0).update(timeElapsed);
+                Clock updatedClock = curr.getTimedAutomata().getClocks().get(0);
+                System.out.println("Clock value is now: " + updatedClock.getValue());
             }
 
-            generateAbstractQueue(abstractZn);
-            TimedAutomata NTA;
-            NTA = new TimedAutomata(automataArray.get(0));
-            
-            for(int i=1;i<automataArray.size();++i) {
-                TimedAutomata t = automataArray.get(i);
-                
-                NTA = NTA.addTimedAutomata(t);
-            }            
-
-            threeValue = tvModelChecker.threeVReachability(NTA,abstractTaskQueue, counterPath); 
-
-            abstractZn = tvModelChecker.timeline;
-            iteration++;
-            
             writeOnPath("Clocks= "+NTA.getClocks().size()+" States= "+NTA.getStateSet().size()+" Trans="+NTA.getTransitions().size()+"; \n", "Output"+label+".txt"); 
 
             if(threeValue==0)  {

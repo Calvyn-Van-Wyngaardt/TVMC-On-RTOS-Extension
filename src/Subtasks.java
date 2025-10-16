@@ -56,10 +56,10 @@ public class Subtasks {
             // Would only matter for the starting subtasks... 
         double newPeriod = getTotalWCET();
 
-        for (Task task: tasks) {
-            if (task.isPeriodic()) {
-                if (!t.isSameTask(task)) {
-                    newPeriod += task.getWCET();
+        for (Task st: subtasks) {
+            if (st.isPeriodic()) {
+                if (!t.isSameTask(st)) {
+                    newPeriod += st.getWCET();
                 } else {
                     break;
                 }
@@ -92,7 +92,7 @@ public class Subtasks {
 
     public void createSubTasks() {
         int defaultOccurrance = 0;
-        double totalDeadline = getMaxDeadline();
+        double totalDeadline = 0;
         double totalPeriod = 0;
         ArrayList<Integer> numSubtasksPerTask = new ArrayList<>();
         
@@ -120,6 +120,7 @@ public class Subtasks {
                     if (currSubTask < numSubtasksPerTask.get(currTaskIndex) - 1) {
                         if (currTask.isPeriodic()) {
                             subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, currSubTask + 1), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
+                            updateSubtaskPeriod();
                         } else {
                             subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, currSubTask + 1), timeslice, 0, (totalDeadline + timeslice), defaultOccurrance));
                         }
@@ -132,6 +133,7 @@ public class Subtasks {
                         if (remainder > 0) {
                             if (currTask.isPeriodic()) {
                                 subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), remainder, (totalPeriod + remainder), (totalDeadline + remainder), defaultOccurrance));
+                                updateSubtaskPeriod();
                             } else {
                                 subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), remainder, 0, (totalDeadline + remainder), defaultOccurrance));
                             }
@@ -141,6 +143,7 @@ public class Subtasks {
                         } else {
                             if (currTask.isPeriodic()) {
                                 subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
+                                updateSubtaskPeriod();
                             } else {
                                 subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), timeslice, 0, (totalDeadline + timeslice), defaultOccurrance));
                             }
@@ -156,9 +159,9 @@ public class Subtasks {
         }
 
         //Update period values 
-        for (Task st: subtasks) {
-            st.setPeriod(getNewPeriod(st));
-        }
+        // for (Task st: subtasks) {
+        //     st.setPeriod(getNewPeriod(st));
+        // }
     }
 
     public ArrayList<Integer> getNumSubtasksForTaskset(ArrayList<Task> ts) {
@@ -169,6 +172,13 @@ public class Subtasks {
         }
 
         return subTasksPerTask;
+    }
+
+    public void updateSubtaskPeriod() {
+        int lastIndex = subtasks.size() - 1;
+        Task justAdded = subtasks.get(lastIndex);
+        justAdded.setPeriod(getNewPeriod(justAdded));
+        subtasks.set(lastIndex, justAdded);
     }
 
     public File createAndWriteToIntermediateFile() {
@@ -197,7 +207,7 @@ public class Subtasks {
                 System.out.println("WCET: " + st.getWCET());
                 System.out.println("Deadline: " + st.getDeadline());
                 System.out.println("Period: " + st.getPeriod());
-                writer.write(String.format("%s %d %d %d\n", st.getLabel(), (int) st.getWCET(), (int) st.getDeadline(), (int) st.getPeriod()));
+                writer.write(String.format("%s %d %d %d\n", st.getLabel(), (int) st.getWCET(), (int) st.getPeriod(), (int) st.getDeadline()));
             }
 
             writer.close();

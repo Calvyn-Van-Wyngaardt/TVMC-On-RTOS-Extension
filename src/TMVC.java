@@ -7,6 +7,7 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 /**
  *
@@ -17,20 +18,26 @@ public class TMVC {
     //private final ArrayList<PathRunLocation> abstractPathRun;
     private final ArrayList<StateZone> pathRunZone; 
     public double timeline; 
+    public double elapsed;
+    public Stack<Double> elapsedTime;
             
     public TMVC() {
     	timeline = 0.0;
+        elapsed = 0.0;
         //pathRun = new ArrayList<>();
         //abstractPathRun = new ArrayList<>();
         pathRunZone = new ArrayList<>();
+        elapsedTime = new Stack<>();
+    }
+
+    public void addToTimeline(double time) {
+        timeline += time;
     }
     
-    
-    
-    
-  public int threeVReachability(TimedAutomata nta, Queue<Task> abstractQ, ArrayList<StateZone> counterPath)    {//abstractQ-->abstractBuffer
+    public int threeVReachability(TimedAutomata nta, Queue<Task> abstractQ, ArrayList<StateZone> counterPath)    {//abstractQ-->abstractBuffer
 	    
 	//  	System.out.println("*****************Iteration Starts**************");  
+        elapsed = 0;
         ArrayList<StateZone> wait = new ArrayList<>();
         ArrayList<StateZone> paused = new ArrayList<>();
         ArrayList<StateZone> passed = new ArrayList<>();
@@ -123,33 +130,33 @@ public class TMVC {
                     
 //                    System.out.println("ZONE AFTER SUCCESSOR ZONE CLOCK UPDATES: ");
 //                    sZ.getZone().printDBM();
-                    
+                    double beforeChange = timeline;
                     timeline = sZ.getZone().getDBM()[1][0].getBound();
-
+                    double afterChange = timeline;
+                    elapsed += (afterChange - beforeChange);
+                    // elapsed = timeline - elapsed;
+                    
                     if(t.getDestinationState().getLabel().contains("Pause"))   {
-                    //if(sZ.getZoneLocation().getLabel().contains("Pause"))   {
+                        //if(sZ.getZoneLocation().getLabel().contains("Pause"))   {
                         paused.add(sZ);
                         //return 1;
                     }
                     
                     // else //if(!readZone.equals(sZ))
                     // {  	
-//                    	System.out.println("Transition with WAIT.ADD Zone: ");
-//                    	System.out.println(t.toString());
+                        //                    	System.out.println("Transition with WAIT.ADD Zone: ");
+                        //                    	System.out.println(t.toString());
                         wait.add(sZ); 
-                    // }
- 
+                        // }
+                        
                 }
             }
        }
         //abstractQ.clear();
+
+       elapsedTime.push(elapsed);
        return 1;
     }
-    
-  
-  
-  
-  
     
     public int threeV_Checker(TimedAutomata nta, Queue<Task> abstractQueue)    {
         
@@ -208,8 +215,6 @@ public class TMVC {
        }
        return threeVal;
     }
-    
-    
     
     public boolean threeValFwdReachability(TimedAutomata nta, Queue<Task> abstractQueue)    {
        ArrayList<StateZone> passed = new ArrayList<>();
@@ -313,8 +318,6 @@ public class TMVC {
    // 	System.out.println("Zone Waiting: "+sZ.toString());
    // } 
     
-    
-    
     public boolean exploreStateSpace(TimedAutomata nta, Queue<Task> abstractQueue)  {
         
         State pauseState = new State(); //pauseState must be last state from abstractQueue
@@ -380,6 +383,10 @@ public class TMVC {
     
     public double getTimeline() {
         return timeline;
+    }
+
+    public double getElapsedTime() {
+        return elapsedTime.peek();
     }
     
 }

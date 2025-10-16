@@ -57,6 +57,9 @@ public final class Task implements Comparable<Task> {
     
     public Task(Task other) {
         uuid = UUID.randomUUID();
+        if (other.getLabel().equals(this.label)) {
+            uuid = other.getUUIDObject();
+        }
         label = other.label;
         wcet = other.wcet;
         period = other.period;
@@ -291,6 +294,10 @@ public final class Task implements Comparable<Task> {
     	responseRatio = (o >=0) ? o : 0;
     }
 
+    public void setuuid(UUID newUUID) {
+        uuid = newUUID;
+    }
+
     public boolean isSameTask(Task t) {
         String uuidString1 = uuid.toString();
         String uuidString2 = t.getUUID().toString();
@@ -332,7 +339,11 @@ public final class Task implements Comparable<Task> {
      
     public TimedAutomata getTaskAutomata()  {
         return taskAutomata;
-    } 
+    }
+
+    public UUID getUUIDObject() {
+        return uuid;
+    }
 
     public String getUUID() {
         return uuid.toString();

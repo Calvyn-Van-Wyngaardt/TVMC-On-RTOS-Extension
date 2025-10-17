@@ -29,13 +29,13 @@ public class Subtasks {
 
     public void calculateTimeBetweenSubTasks() {
         for (Task st: subtasks) {
-            System.out.println("Current task to calculate: " + st.toString());
+            // System.out.println("Current task to calculate: " + st.toString());
             if (st.isPeriodic()) {
                 double timebetween = st.getPeriod() - st.getDeadline();
-                System.out.println("Period: " + st.getPeriod() + "; Deadline: " + st.getDeadline() + " = " + timebetween);
+                // System.out.println("Period: " + st.getPeriod() + "; Deadline: " + st.getDeadline() + " = " + timebetween);
                 timeBetweenSubTasks.put(st.getLabel(), timebetween);
             } else {
-                System.out.println("Skipping...");
+                // System.out.println("Skipping...");
             }
         }
     }

@@ -53,7 +53,7 @@ public final class QueueAbstractor {
             if (tk.getPeriod() > 0) {
                 // Check if task is already in hashmap...
                 if (!originalDeadlineValues.containsKey(tk.getLabel())) {
-                    System.out.println(String.format("Adding deadline %f to task %s", tk.getDeadline(), tk.getLabel()));
+                    // System.out.println(String.format("Adding deadline %f to task %s", tk.getDeadline(), tk.getLabel()));
                     originalDeadlineValues.put(tk.getLabel(), tk.getDeadline());
                 }
             }
@@ -211,15 +211,15 @@ public final class QueueAbstractor {
         int originalConcreteQueueSize = concreteTaskQueue.size();
         int tasksProcessed = 0;
 
-        System.out.println("QueueAbstractor - [queueAbstraction]: Entering while(concreteTaskQueue != empty)");
-        while((!concreteTaskQueue.isEmpty() || !tempPool.isEmpty()) && !patternDetected && tasksProcessed < 100) {
+        // System.out.println("QueueAbstractor - [queueAbstraction]: Entering while(concreteTaskQueue != empty)");
+        while((!concreteTaskQueue.isEmpty() || !tempPool.isEmpty()) && !patternDetected) {
         	automataArray.clear();
             Double currentTime = tvModelChecker.getTimeline();
 
-            System.out.println("Current Concrete Queue:");
-            for (Task t: concreteTaskQueue) {
-                System.out.println("- " + t.toString());
-            }
+            // System.out.println("Current Concrete Queue:");
+            // for (Task t: concreteTaskQueue) {
+                // System.out.println("- " + t.toString());
+            // }
 
              //Check for ready tasks and add them to the concreteQueue...
                 for (int i = 0; i < tempPool.size(); i++) {
@@ -232,9 +232,9 @@ public final class QueueAbstractor {
                     if (currentTime >= curr.getPeriod()) {
                         // curr.getTimedAutomata().resetAllClocks();
                         
-                        System.out.println("\tThis task: " + curr.toString() + " is apparently ready to move?");
-                        System.out.println("\tCurrentTime: " + currentTime);
-                        System.out.println("\tcurr.getPeriod: " + currentTime);
+                        // System.out.println("\tThis task: " + curr.toString() + " is apparently ready to move?");
+                        // System.out.println("\tCurrentTime: " + currentTime);
+                        // System.out.println("\tcurr.getPeriod: " + currentTime);
                         tempPool.remove(i);
                         concreteTaskQueue.add(curr);
                         // currEntry.addTask(curr);
@@ -255,11 +255,11 @@ public final class QueueAbstractor {
             {
                 //Else, there may be some tasks that are ready to be checked...
                 Entry currEntry = new Entry();
-                System.out.println("| Temp pool size: " + tempPool.size());
-                System.out.println("| Tasks in Temp Pool:");
-                if (tempPool.size() == 0) {
-                    System.out.println("| NONE");
-                }
+                // System.out.println("| Temp pool size: " + tempPool.size());
+                // System.out.println("| Tasks in Temp Pool:");
+                // if (tempPool.size() == 0) {
+                    // System.out.println("| NONE");
+                // }
 
                 // //Check for ready tasks and add them to the concreteQueue...
                 // for (int i = 0; i < tempPool.size(); i++) {
@@ -302,7 +302,7 @@ public final class QueueAbstractor {
                                 // Double deadlineValue = newTask.getDeadline();
                                 // System.out.println(String.format("Adding original period (%f) to deadline (%f) for task %s: ", originalPeriodValue, deadlineValue, t.getLabel()));
                                 // System.out.println(String.format("Adding (period - wcet = %f - %f) to current deadline (%f) for task %s: ", newTask.getPeriod(), newTask.getWCET(), newTask.getDeadline(), t.getLabel()));
-                                System.out.println("Old deadline: " + newTask.getDeadline());
+                                // System.out.println("Old deadline: " + newTask.getDeadline());
                                 // t.setDeadline(originalPeriodValue + deadlineValue);
                                 // newTask.setPeriod(newTask.getPeriod() + originalPeriodValue);
                                 HashMap<String, Double> timeBetween = taskGen.getTimeBetweenSubTasks();
@@ -320,10 +320,10 @@ public final class QueueAbstractor {
                                 // newTask.setDeadline(newTask.getDeadline() + (newTask.getPeriod() - newTask.getWCET()));
                                 newTask.setDeadline(newTask.getDeadline() + timeToAdd);
                                 newTask.setPeriod(newTask.getPeriod() + timeToAdd);
-                                System.out.println("New deadline: " + newTask.getDeadline());
+                                // System.out.println("New deadline: " + newTask.getDeadline());
                                 // System.out.println("Difference: " + newTask.getPeriod() + ((int) (newTask.getPeriod() - newTask.getWCET())));
-                                System.out.println("Time Added: " + timeToAdd);
-                                System.out.println("\t- " + newTask.toString());
+                                // System.out.println("Time Added: " + timeToAdd);
+                                // System.out.println("\t- " + newTask.toString());
                                 newTask.setuuid(t.getUUIDObject());
                                 newTask.setTaskAutomata();
                                 
@@ -336,14 +336,14 @@ public final class QueueAbstractor {
                                 Double originalPeriodValue = newTask.getPeriod();
                                 originalPeriodValues.put(newTask.getLabel(), originalPeriodValue);
                                 // System.out.println(String.format("Adding original period (%f) to deadline (%f) for task %s: ", originalPeriodValue, deadlineValue, newTask.getLabel()));
-                                System.out.println(String.format("Adding wcet (%f) to period (%f) for task %s: ", newTask.getWCET(), originalPeriodValue, t.getLabel()));
-                                System.out.println("Old deadline: " + newTask.getDeadline());
+                                // System.out.println(String.format("Adding wcet (%f) to period (%f) for task %s: ", newTask.getWCET(), originalPeriodValue, t.getLabel()));
+                                // System.out.println("Old deadline: " + newTask.getDeadline());
                                 
                                 // newTask.setDeadline(originalPeriodValue + (deadlineValue - tvModelChecker.getTimeline()));
                                 // We know it'll never change, so just add wcet...
                                 newTask.setDeadline(originalPeriodValue + newTask.getWCET());
-                                System.out.println("New deadline: " + newTask.getDeadline());
-                                System.out.println("\t- " + newTask.toString());
+                                // System.out.println("New deadline: " + newTask.getDeadline());
+                                // System.out.println("\t- " + newTask.toString());
                                 newTask.setuuid(t.getUUIDObject());
                                 newTask.setTaskAutomata();
                                 
@@ -368,8 +368,8 @@ public final class QueueAbstractor {
     
                 abstractZn = tvModelChecker.timeline;
                 double timeElapsed = tvModelChecker.getElapsedTime();
-                System.out.println("Timeline: " + abstractZn);
-                System.out.println("Time elapsed: " + timeElapsed);
+                // System.out.println("Timeline: " + abstractZn);
+                // System.out.println("Time elapsed: " + timeElapsed);
                 iteration++;
 
                 for (int i = 0 ; i < interval; i++) {
@@ -402,13 +402,13 @@ public final class QueueAbstractor {
         }
 
         // if (tasksProcessed >= 50) {
-            System.out.println("=============================");
-            System.out.println("Chain of all repeated tasks: ");
-            int i = 0;
-            for (Task t: repeatingTasks) {
-                System.out.println("\t- " + t.toString() + " => " + i);
-                i += 1;
-            }
+            // System.out.println("=============================");
+            // System.out.println("Chain of all repeated tasks: ");
+            // int i = 0;
+            // for (Task t: repeatingTasks) {
+                // System.out.println("\t- " + t.toString() + " => " + i);
+                // i += 1;
+            // }
         // }
 
         System.out.println("QueueAbstractor - [queueAbstraction]: ConcreteQueue processed with no failed schedule");
@@ -424,8 +424,8 @@ public final class QueueAbstractor {
     }
 
     public boolean findPattern() {
-        System.out.println("QueueAbstractor - [findPattern]: Setting up indices...");
-        System.out.println("QueueAbstractor - [findPattern]: Num repeating tasks: " + repeatingTasks.size());
+        // System.out.println("QueueAbstractor - [findPattern]: Setting up indices...");
+        // System.out.println("QueueAbstractor - [findPattern]: Num repeating tasks: " + repeatingTasks.size());
         
         //Cut off 20% of records...
         int startIndex = (int) Math.round(repeatingTasks.size() * 0.2);
@@ -443,31 +443,31 @@ public final class QueueAbstractor {
         
         for (int i = 0; i < repeatingTasks.size(); i++) {
             Task curr = repeatingTasks.get(i);
-            System.out.println("QueueAbstractor - [findPattern]: " + firstTask.getLabel() + " == " + curr.getLabel() + "?");
+            // System.out.println("QueueAbstractor - [findPattern]: " + firstTask.getLabel() + " == " + curr.getLabel() + "?");
             if (firstTask.getLabel().equals(repeatingTasks.get(i).getLabel())) {
                 indices.push(i);
-                System.out.println("QueueAbstractor - [findPattern]: true");
+                // System.out.println("QueueAbstractor - [findPattern]: true");
             }
             else {
-                System.out.println("QueueAbstractor - [findPattern]: false");
+                // System.out.println("QueueAbstractor - [findPattern]: false");
             }
         }
 
 
-        System.out.println("QueueAbstractor - [findPattern]: Indices Stack Size:" + repeatingTasks.size());
-        System.out.println("QueueAbstractor - [findPattern]: Indices Array: ");
+        // System.out.println("QueueAbstractor - [findPattern]: Indices Stack Size:" + repeatingTasks.size());
+        // System.out.println("QueueAbstractor - [findPattern]: Indices Array: ");
         String indicesString = "[";
         for (Integer i: indices) {
             indicesString += " " + i;
         }
         indicesString += "]";
-        System.out.println(indicesString);
+        // System.out.println(indicesString);
 
         //Find a way to also iterate over all the indices to compare not just the first element
         indicesArr = new Integer[indices.size()];
         for (int i = 0; i < indices.size(); i++) {
             indicesArr[i] = indices.get(i);
-            System.out.println("Indice at: " + i + " = " + indices.get(i) + "; indicesArr[" + i + "] = " + indicesArr[i]);
+            // System.out.println("Indice at: " + i + " = " + indices.get(i) + "; indicesArr[" + i + "] = " + indicesArr[i]);
         }
         
         //Keeps track of indicesIndex...
@@ -478,26 +478,26 @@ public final class QueueAbstractor {
             for (int i = k+1 ; i < indicesArr.length; i++) {
                 //If the first task matches a task using indices
                 int size = indicesArr[i] - indicesArr[k];
-                System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",k,i) + ") Size: " + size);
+                // System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",k,i) + ") Size: " + size);
                 
                 if (k != i && size > 3) {
-                    System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",k,i) + ") Comparing elements: (" + repeatingTasks.get(indicesArr[k]) + ")[" + indicesArr[k] + "] with " + repeatingTasks.get(indicesArr[i])+ ")[" + indicesArr[i] + "]");
-                    System.out.println(String.format("QueueAbstractor - [findPattern]: RepeatingTasks[%d]: %s", indicesArr[k], repeatingTasks.get(indicesArr[k]).toString() ));
-                    System.out.println(String.format("QueueAbstractor - [findPattern]: RepeatingTasks[%d]: %s", indicesArr[i], repeatingTasks.get(indicesArr[i]).toString() ));
+                    // System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",k,i) + ") Comparing elements: (" + repeatingTasks.get(indicesArr[k]) + ")[" + indicesArr[k] + "] with " + repeatingTasks.get(indicesArr[i])+ ")[" + indicesArr[i] + "]");
+                    // System.out.println(String.format("QueueAbstractor - [findPattern]: RepeatingTasks[%d]: %s", indicesArr[k], repeatingTasks.get(indicesArr[k]).toString() ));
+                    // System.out.println(String.format("QueueAbstractor - [findPattern]: RepeatingTasks[%d]: %s", indicesArr[i], repeatingTasks.get(indicesArr[i]).toString() ));
                     boolean match = repeatingTasks.get(indicesArr[k]).getLabel().equals(repeatingTasks.get(indicesArr[i]).getLabel());
-                    System.out.println(String.format("QueueAbstractor - [findPattern]: Match: %b",  match));
+                    // System.out.println(String.format("QueueAbstractor - [findPattern]: Match: %b",  match));
 
                     if (match) {
-                        System.out.println("====================================================");
-                        System.out.println("\tStarting to check element by element...");
+                        // System.out.println("====================================================");
+                        // System.out.println("\tStarting to check element by element...");
                         // int j = 1;
                         boolean allElementsMatch = true;
                         for (int j = 1; j < size; j++) {
-                            System.out.println("J =========== " + j);
-                            System.out.println("SIZE =========== " + size);
+                            // System.out.println("J =========== " + j);
+                            // System.out.println("SIZE =========== " + size);
                             if (indicesArr[i]+j < repeatingTasks.size()) {
-                                System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",k,i) + ") Comparing (" + repeatingTasks.get(indicesArr[k]+j).toString() + String.format("[%d]", indicesArr[k]+j) + "to (" + repeatingTasks.get(indicesArr[i]+j) + ")" + String.format("[%d]", indicesArr[i]+j));
-                                System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",k,i) + ") Match: " + repeatingTasks.get(indicesArr[k]+j).getLabel().equals(repeatingTasks.get(indicesArr[i]+j).getLabel()));
+                                // System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",k,i) + ") Comparing (" + repeatingTasks.get(indicesArr[k]+j).toString() + String.format("[%d]", indicesArr[k]+j) + "to (" + repeatingTasks.get(indicesArr[i]+j) + ")" + String.format("[%d]", indicesArr[i]+j));
+                                // System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",k,i) + ") Match: " + repeatingTasks.get(indicesArr[k]+j).getLabel().equals(repeatingTasks.get(indicesArr[i]+j).getLabel()));
                                         
                                     //j is how many elements next are we checking
                                     //k is the index of the first element to compare.
@@ -511,27 +511,27 @@ public final class QueueAbstractor {
                                                 System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",i,k) + ") $$$- MATCH FOUND -$$$");
                                                 return true;
                                             } else {
-                                                System.out.println("QueueAbstractor - [findPattern]: j != size - 1" + "; j = " + j + String.format(";size-1 = %d", size-1));
+                                                // System.out.println("QueueAbstractor - [findPattern]: j != size - 1" + "; j = " + j + String.format(";size-1 = %d", size-1));
                                             }
                                         } 
                                         else 
                                         {
                                             allElementsMatch = false;
-                                            System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",i,k) + ") NO MATCH!");
+                                            // System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",i,k) + ") NO MATCH!");
                                             continue;       //No match
                                         }
                                     } 
                                     else
                                     {
-                                        System.out.println("WE WANTED TO CHECK...");
+                                        // System.out.println("WE WANTED TO CHECK...");
                                         if (indicesArr[k]+j >= repeatingTasks.size()) {
-                                            System.out.println("BUUUUUTTTTTT (k) => Indices[k]+j > repatingTasks.size()");
+                                            // System.out.println("BUUUUUTTTTTT (k) => Indices[k]+j > repatingTasks.size()");
                                         } else if (indicesArr[i]+j >= repeatingTasks.size()) {
-                                            System.out.println("BUUUUUTTTTTT (i) => Indices[i]+j > repatingTasks.size()");
+                                            // System.out.println("BUUUUUTTTTTT (i) => Indices[i]+j > repatingTasks.size()");
                                         }
                                     }
                             } else {
-                                System.out.println("INDEX OUT OF BOUNDS BECAUSE YOU'RE TRYING TO ACCES SOMETHING THAT DOESNT EXIST");
+                                // System.out.println("INDEX OUT OF BOUNDS BECAUSE YOU'RE TRYING TO ACCES SOMETHING THAT DOESNT EXIST");
                                 continue;
                             }
                             } 

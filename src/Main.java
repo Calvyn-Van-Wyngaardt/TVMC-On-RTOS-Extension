@@ -121,11 +121,12 @@ public class Main {
 					if (policyId == 5) {
 						// This can be made dynamic later...
 						timeslice = taskGen.getAverageTimeSlice();
+						System.out.println("Average time slice value: " + timeslice);
 						Subtasks subtasks = new Subtasks(taskGen, timeslice);
 						subtasks.createSubTasks();
 						tempFile = subtasks.createAndWriteToIntermediateFile();
-						System.out.println("Subtasks created:");
-						System.out.println(subtasks.toString());
+						// System.out.println("Subtasks created:");
+						// System.out.println(subtasks.toString());
 						taskGen = new TaskGenerator(filename + "-intermediate", 0.8, i*5, subtasks.getTimeBetweenSubTasks());
 						label = label + "-intermediate";
 						// return;

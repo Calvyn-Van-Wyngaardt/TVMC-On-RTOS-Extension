@@ -36,5 +36,8 @@ This file stores the size (clock size, states size, transitions) of the timed au
 
 STATE EXPLORATION TRACE: In the cases when the output is Not Sched, this file stores the counter example trace.
 
+## Testing
+Tasksets were generated using the [real-time-task-generator-framework](https://github.com/porya-gohary/real-time-task-generator-framework), implementing the UUnifast algorithm.
+
 ## Disclaimer
 ###### This project is an extension of [Madoda Nxumalo's](https://github.com/MadodaNxumalo) original project, called [TVMC-On-RTOS](https://github.com/MadodaNxumalo/TVMC-On-RTOS). This repository was created as part of a research effort to extend the tool's capabilities by including preemption and recurring tasks.

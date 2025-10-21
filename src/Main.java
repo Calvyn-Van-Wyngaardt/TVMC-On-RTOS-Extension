@@ -75,8 +75,8 @@ public class Main {
                     	System.out.println("Highest Response Ration Next Queue: ");     
 						break;
 					case 5:
-						System.out.println("Enter the timeslice value: ");
-						timeslice = scan.nextInt();
+						// System.out.println("Enter the timeslice value: ");
+						// timeslice = scan.nextInt();
 
 						System.out.println("Round Robin (Preemptive) Queue: ");
 						break;
@@ -119,6 +119,8 @@ public class Main {
 					taskGen = new TaskGenerator(filename, 0.8, i*5);
 					
 					if (policyId == 5) {
+						// This can be made dynamic later...
+						timeslice = taskGen.getAverageTimeSlice();
 						Subtasks subtasks = new Subtasks(taskGen, timeslice);
 						subtasks.createSubTasks();
 						tempFile = subtasks.createAndWriteToIntermediateFile();
@@ -133,8 +135,8 @@ public class Main {
 					return;
         		
         		// taskGen.taskSetSort(policyId);
-				System.out.println("Task Set");
-        		taskGen.print(); 
+				// System.out.println("Task Set");
+        		// taskGen.print(); 
         		
         //		System.out.println();
         //		System.out.println("Enter the number of processors: ");  

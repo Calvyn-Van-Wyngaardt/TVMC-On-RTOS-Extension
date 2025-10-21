@@ -33,6 +33,7 @@ public final class QueueAbstractor {
     private HashMap<String, Double> originalDeadlineValues;
     private HashMap<String, Double> originalPeriodValues;
     private TaskGenerator taskGen;
+    private boolean dataCut = false;
     
     public QueueAbstractor(int k, boolean t, TaskGenerator tg, int procSz)    {
         tempPool = new LinkedList<>();
@@ -157,7 +158,7 @@ public final class QueueAbstractor {
             // THE TIMEDAUTOMATA MAY NOT BE UPDATING IT'S CONSTRAINTS, 
             // LEAVING NEW INCOMING TASKS WITH OLDER OUTDATED CLOCK CONSTRAINTS?
             //  => ENSURE YOU UPDATE THE CLOCK CONSTRAINTS OF EACH TASK TOO!
-            System.out.println("Task in Spotlight: "+ p.toString()); 
+            // System.out.println("Task in Spotlight: "+ p.toString()); 
             abstractTaskQueue.add(p);
             TimedAutomata temp = new TimedAutomata(p.getTaskAutomata());
             automataArray.add(temp);
@@ -174,13 +175,13 @@ public final class QueueAbstractor {
         
         if(!concreteTaskQueue.isEmpty()){
             Task shade = new Task(concreteTaskQueue);
-            System.out.println("Abstract Task in Spotlight: "+ shade.toString());
+            // System.out.println("Abstract Task in Spotlight: "+ shade.toString());
             abstractTaskQueue.add(shade);
             automataArray.add(shade.getTaskAutomata());
         }
         
-        for(Task shade:concreteTaskQueue)
-        	System.out.println("Task in Shade: "+ shade.toString());
+        // for(Task shade:concreteTaskQueue)
+        // 	System.out.println("Task in Shade: "+ shade.toString());
         
         processorSet.forEach((processorSet1) -> {
             TimedAutomata temp = new TimedAutomata(processorSet1.getAutomata());
@@ -203,7 +204,7 @@ public final class QueueAbstractor {
     }
     
     public boolean queueAbstraction() throws IOException {
-        System.out.println("QueueAbstractor - [queueAbstraction]: Entered function");
+        // System.out.println("QueueAbstractor - [queueAbstraction]: Entered function");
         int threeValue = 1;
         int iteration = 0;
         double abstractZn = 0.0; //new ClockZone();
@@ -212,7 +213,7 @@ public final class QueueAbstractor {
         int tasksProcessed = 0;
 
         // System.out.println("QueueAbstractor - [queueAbstraction]: Entering while(concreteTaskQueue != empty)");
-        while((!concreteTaskQueue.isEmpty() || !tempPool.isEmpty()) && !patternDetected) {
+        while((!concreteTaskQueue.isEmpty() || !tempPool.isEmpty()) && !patternDetected && tasksProcessed < 8000) {
         	automataArray.clear();
             Double currentTime = tvModelChecker.getTimeline();
 
@@ -246,7 +247,7 @@ public final class QueueAbstractor {
             if (concreteTaskQueue.isEmpty()) 
             {
                 tvModelChecker.addToTimeline(1);
-                System.out.println("\t\tAdding 1 time unit to timeline");
+                // System.out.println("\t\tAdding 1 time unit to timeline");
                 // for (Task t: tempPool) {
                 //     t.getTimedAutomata().getClocks().get(0).update(1);
                 // }
@@ -283,7 +284,7 @@ public final class QueueAbstractor {
                 // }
 
                 //This updates the deadline to be correct for the next iteration...
-                System.out.println("Moving the following tasks to temp pool. Updated Deadline.");
+                // System.out.println("Moving the following tasks to temp pool. Updated Deadline.");
                 for (int i = 0; i < interval; i++) {
                     if (i < concreteTaskQueue.size()) {
                         Task t = concreteTaskQueue.get(i);
@@ -292,9 +293,9 @@ public final class QueueAbstractor {
                             //Dynamically update deadline values for task...
                             //Make sure we go throught the concreteQueue once first. Then we deal with the periodic tasks being added.
                             //TODO: Where are the periods of tasks being updated?
-                            System.out.println("Iteration: " + iteration);
-                            System.out.println("Tasks Processed: " + tasksProcessed);                            
-                            System.out.println("originalConcreteQueueSize: " + originalConcreteQueueSize);
+                            // System.out.println("Iteration: " + iteration);
+                            // System.out.println("Tasks Processed: " + tasksProcessed);                            
+                            // System.out.println("originalConcreteQueueSize: " + originalConcreteQueueSize);
                             if (tasksProcessed >= originalConcreteQueueSize) {
                                 Task newTask = new Task(t);
                                 //In this one we modify the value before checking takes place
@@ -308,6 +309,8 @@ public final class QueueAbstractor {
                                 HashMap<String, Double> timeBetween = taskGen.getTimeBetweenSubTasks();
                                 Double timeToAdd = 0.0;
                                 
+
+                                //TODO! This maps to null for other scheduling policies. Fix This...
                                 Collection<Double> values = timeBetween.values();
                                 
                                 for (String k: timeBetween.keySet()) {
@@ -376,7 +379,7 @@ public final class QueueAbstractor {
                     if (i < concreteTaskQueue.size()) {
                         tasksProcessed += 1;
                     }
-                    System.out.println("\t\t\tTasks Processed: " + tasksProcessed);
+                    // System.out.println("\t\t\tTasks Processed: " + tasksProcessed);
                 }
 
                 writeOnPath("Clocks= "+NTA.getClocks().size()+" States= "+NTA.getStateSet().size()+" Trans="+NTA.getTransitions().size()+"; \n", "Output"+label+".txt"); 
@@ -389,7 +392,7 @@ public final class QueueAbstractor {
                 } else if (threeValue == 1) {
                     // Create new entry in LinkedList that contains the tasks just checked
                     // Check LinkedList for a pattern...
-                    if (iteration > (originalConcreteQueueSize * 2) && repeatingTasks.size() > 0) {
+                    if (iteration > (originalConcreteQueueSize * 3) && repeatingTasks.size() > 0) {
                         patternDetected = findPattern();
                     }
                 }
@@ -397,22 +400,22 @@ public final class QueueAbstractor {
                 //System.out.println("Highest Clock Value: "+ abstractZn);
                 //updateConcreteQueue(concreteTaskQueue, abstractTaskQueue);
                 String reached = (threeValue == 1) ? "unknown/true" : "false";
-                System.out.println("QueueAbstractor - [queueAbstraction]: Reachability is " + reached);
+                // System.out.println("QueueAbstractor - [queueAbstraction]: Reachability is " + reached);
             }
         }
 
-        // if (tasksProcessed >= 50) {
-            // System.out.println("=============================");
-            // System.out.println("Chain of all repeated tasks: ");
-            // int i = 0;
-            // for (Task t: repeatingTasks) {
-                // System.out.println("\t- " + t.toString() + " => " + i);
-                // i += 1;
-            // }
+        // if (tasksProcessed >= 8000) {
+        //     System.out.println("=============================");
+        //     System.out.println("Chain of all repeated tasks: ");
+        //     int i = 0;
+        //     for (Task t: repeatingTasks) {
+        //         System.out.println("\t- " + t.toString() + " => " + i);
+        //         i += 1;
+        //     }
         // }
 
-        System.out.println("QueueAbstractor - [queueAbstraction]: ConcreteQueue processed with no failed schedule");
-        System.out.println("QueueAbstractor - [queueAbstraction]: Schedulability property: Schedulable");
+        // System.out.println("QueueAbstractor - [queueAbstraction]: ConcreteQueue processed with no failed schedule");
+        // System.out.println("QueueAbstractor - [queueAbstraction]: Schedulability property: Schedulable");
  
         if (patternDetected) {
             writeOnPath("Ite= "+iteration+" ; "+" Sched - Pattern detected\n", "Output"+label+".txt");
@@ -427,14 +430,16 @@ public final class QueueAbstractor {
         // System.out.println("QueueAbstractor - [findPattern]: Setting up indices...");
         // System.out.println("QueueAbstractor - [findPattern]: Num repeating tasks: " + repeatingTasks.size());
         
-        //Cut off 20% of records...
-        int startIndex = (int) Math.round(repeatingTasks.size() * 0.2);
-        LinkedList newRepeatingTasks = new LinkedList<Task>();
-        for (int idx = startIndex; idx < repeatingTasks.size(); idx++) {
-            newRepeatingTasks.add(repeatingTasks.get(idx));
+        if (!dataCut) {
+            //Cut off 5% of records...
+            int startIndex = (int) Math.round(repeatingTasks.size() * 0.05);
+            LinkedList<Task> newRepeatingTasks = new LinkedList<>();
+            for (int idx = startIndex; idx < repeatingTasks.size(); idx++) {
+                newRepeatingTasks.add(repeatingTasks.get(idx));
+            }
+            
+            repeatingTasks = newRepeatingTasks;
         }
-        
-        repeatingTasks = newRepeatingTasks;
 
 
         Task firstTask = repeatingTasks.get(0);
@@ -456,11 +461,11 @@ public final class QueueAbstractor {
 
         // System.out.println("QueueAbstractor - [findPattern]: Indices Stack Size:" + repeatingTasks.size());
         // System.out.println("QueueAbstractor - [findPattern]: Indices Array: ");
-        String indicesString = "[";
-        for (Integer i: indices) {
-            indicesString += " " + i;
-        }
-        indicesString += "]";
+        // String indicesString = "[";
+        // for (Integer i: indices) {
+        //     indicesString += " " + i;
+        // }
+        // indicesString += "]";
         // System.out.println(indicesString);
 
         //Find a way to also iterate over all the indices to compare not just the first element

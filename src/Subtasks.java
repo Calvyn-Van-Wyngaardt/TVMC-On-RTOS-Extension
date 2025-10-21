@@ -133,10 +133,10 @@ public class Subtasks {
                 Task currTask = tasks.get(currTaskIndex);
                 
                 if (currSubTask < numSubtasksPerTask.get(currTaskIndex)) {
-                    System.out.println("Creating task t" + (currTaskIndex+1) + "." + (currSubTask+1));
-                    System.out.println("Current Sub Task: " + (currSubTask+1));
-                    System.out.println("Current Task: " + (currTaskIndex+1));
-                    System.out.println("Number of SubTasksPerTask size: " + numSubtasksPerTask.size());
+                    // System.out.println("Creating task t" + (currTaskIndex+1) + "." + (currSubTask+1));
+                    // System.out.println("Current Sub Task: " + (currSubTask+1));
+                    // System.out.println("Current Task: " + (currTaskIndex+1));
+                    // System.out.println("Number of SubTasksPerTask size: " + numSubtasksPerTask.size());
 
                     if (currSubTask < numSubtasksPerTask.get(currTaskIndex) - 1) {
                         if (currTask.isPeriodic()) {
@@ -173,7 +173,7 @@ public class Subtasks {
                         }
                     }
                 } else {
-                    System.out.println(String.format("Subtasks - [createSubTasks]: Current subtask index (%d) does not exist for task %d", currSubTask, (currTaskIndex + 1)));
+                    // System.out.println(String.format("Subtasks - [createSubTasks]: Current subtask index (%d) does not exist for task %d", currSubTask, (currTaskIndex + 1)));
                 }
 
             }
@@ -206,33 +206,33 @@ public class Subtasks {
         
         try {
             if (intermediateFile.createNewFile()) {
-                System.out.println("Intermediate file created!");
+                // System.out.println("Intermediate file created!");
             } else {
-                System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Failed to create intermediate file - already exists");
+                // System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Failed to create intermediate file - already exists");
                 // This can be done better... Fix later.
                 if (intermediateFile.delete()) {
-                    System.out.println("Deleted file successfully!");
+                    // System.out.println("Deleted file successfully!");
                     if (intermediateFile.createNewFile()) {                    
-                        System.out.println("New File created successfully!");
+                        // System.out.println("New File created successfully!");
                     } else {
-                        System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Failed to create intermediate file - already exists");
+                        // System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Failed to create intermediate file - already exists");
                     }
                 } else {
-                    System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Failed to delete intermediate file...");
+                    // System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Failed to delete intermediate file...");
                 }
             }
             FileWriter writer = new FileWriter("../tasksetInput/" + taskSetLabel + "-intermediate.txt", true);
             
             for (Task st: subtasks) {
-                System.out.println("WCET: " + st.getWCET());
-                System.out.println("Deadline: " + st.getDeadline());
-                System.out.println("Period: " + st.getPeriod());
+                // System.out.println("WCET: " + st.getWCET());
+                // System.out.println("Deadline: " + st.getDeadline());
+                // System.out.println("Period: " + st.getPeriod());
                 writer.write(String.format("%s %d %d %d\n", st.getLabel(), (int) st.getWCET(), (int) st.getPeriod(), (int) st.getDeadline()));
             }
 
             writer.close();
         } catch (Exception e) {
-            System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Could not finish creating/writing file:");
+            // System.out.println("Subtasks - [createAndWriteToIntermediateFile]: Could not finish creating/writing file:");
             e.printStackTrace();
         }
 

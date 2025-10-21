@@ -401,7 +401,7 @@ public class TimedAutomata {
             });
         });
         
-        System.out.println();
+        // System.out.println();
         return t;
     }
     
@@ -630,8 +630,8 @@ public class TimedAutomata {
     	
         ArrayList<Transition> outLocations = new ArrayList<>();
         for(Transition outTrans: transitions)   {
-            System.out.println();
-        	System.out.println("OUT TRANS1: "+outTrans.toString());
+            // System.out.println();
+        	// System.out.println("OUT TRANS1: "+outTrans.toString());
             if(outTrans.getSourceState().getLabel().equals(loc.getPathState().getLabel()))   {
             		outLocations.add(outTrans);
             }
@@ -645,8 +645,8 @@ public class TimedAutomata {
     	
         ArrayList<Transition> outLocations = new ArrayList<>();
         for(Transition outTrans: transitions)   {
-        	System.out.println();
-        	System.out.println("OUT TRANS2: "+outTrans.toString());
+        	// System.out.println();
+        	// System.out.println("OUT TRANS2: "+outTrans.toString());
             if(outTrans.getSourceState().getLabel().equals(loc.getLabel()))   {
             		outLocations.add(outTrans);
             }
@@ -661,8 +661,8 @@ public class TimedAutomata {
     	
         ArrayList<Transition> outLocations = new ArrayList<>();
         for(Transition outTrans: transitions)   {
-        	System.out.println();
-        	System.out.println("OUT TRANS3: "+outTrans.toString());
+        	// System.out.println();
+        	// System.out.println("OUT TRANS3: "+outTrans.toString());
             if(outTrans.getSourceState().getLabel().equals(loc.getZoneLocation().getLabel()))   {
             		outLocations.add(outTrans);
             }
@@ -738,23 +738,23 @@ public class TimedAutomata {
 //               String label=outTrans.getTimedAction().getSymbol().substring(0, 2);
         	   if(outTrans.getTimedAction().getSymbol().contains("enque"))	{
             		b = enqueueAction(p, outTrans, loc);
-            		System.out.println(" Enqueue IF Reached: "+ b);
+            		// System.out.println(" Enqueue IF Reached: "+ b);
             	}
             	else if ((outTrans.getTimedAction().getSymbol().contains("acquire")))	{
             		//outLocations.add(outTrans);
             		b = acquireAction(p, outTrans, deque);
-            		System.out.println(" Acquire IF Reached: "+ b);
+            		// System.out.println(" Acquire IF Reached: "+ b);
             	}
             	else if ((outTrans.getTimedAction().getSymbol().contains("release"))) {
             		b = releaseAction(outTrans);
-            		System.out.println(" Release IF Reached: "+ b);
+            		// System.out.println(" Release IF Reached: "+ b);
             	}
             	else if ((outTrans.getTimedAction().getSymbol().contains("abort")))	{
             		b = abortAction(p, outTrans);
-            		System.out.println(" Abort IF Reached: "+ b);
+            		// System.out.println(" Abort IF Reached: "+ b);
             	}
             	else	{
-            		System.out.println("Default: "+ outTrans.getTimedAction().getSymbol());
+            		// System.out.println("Default: "+ outTrans.getTimedAction().getSymbol());
             	}
             	
             	/*if(deque)	{
@@ -767,7 +767,7 @@ public class TimedAutomata {
             	}
             }
         }
-        System.out.println("OUT LOCATION SIZE: "+ outLocations.size() );
+        // System.out.println("OUT LOCATION SIZE: "+ outLocations.size() );
         return outLocations;
     }
     

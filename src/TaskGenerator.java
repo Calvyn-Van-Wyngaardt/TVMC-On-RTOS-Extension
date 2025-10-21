@@ -32,7 +32,7 @@ public class TaskGenerator {
         numberOfTasks = taskSet.size();
         utilization = utilize;
         seed = _seed;
-        System.out.println(label+" TASKSET SIZE: "+numberOfTasks+" "+seed+" "+utilization);
+        // System.out.println(label+" TASKSET SIZE: "+numberOfTasks+" "+seed+" "+utilization);
 	}
 
     public TaskGenerator(String filename, double utilize, int _seed, HashMap<String, Double> time) {
@@ -42,7 +42,7 @@ public class TaskGenerator {
         numberOfTasks = taskSet.size();
         utilization = utilize;
         seed = _seed;
-        System.out.println(label+" TASKSET SIZE: "+numberOfTasks+" "+seed+" "+utilization);
+        // System.out.println(label+" TASKSET SIZE: "+numberOfTasks+" "+seed+" "+utilization);
         timeBetweenSubtasks = time;
 	}
 
@@ -256,6 +256,14 @@ public class TaskGenerator {
             writer.close();
         }
         
+        public int getAverageTimeSlice() {
+            int average = 0;
+            for (Task t: taskSet) {
+                average += t.getWCET();
+            }
+            
+            return Math.round(average / taskSet.size());
+        }
         
         
         

@@ -60,16 +60,16 @@ public class Entry {
 
     public void getPerm(Task[] currPerm, int currIndex) {
         int swapPositions = (currPerm.length) - currIndex;
-        System.out.println("== Level: " + currIndex);
-        System.out.println("\tswapPositions: " + swapPositions);
-        System.out.println("\tcurrPerm: " + printTaskArray(currPerm));
+        // System.out.println("== Level: " + currIndex);
+        // System.out.println("\tswapPositions: " + swapPositions);
+        // System.out.println("\tcurrPerm: " + printTaskArray(currPerm));
 
         // Base Case
         if (swapPositions <= 1 && currIndex == (currPerm.length - 1)) {
             //Add to permutation queue...
             if (!permutations.contains(currPerm)) {
                 permutations.add(currPerm);
-                System.out.println("Added permutation: " + printTaskArray(currPerm));
+                // System.out.println("Added permutation: " + printTaskArray(currPerm));
             }
         }
         
@@ -86,13 +86,13 @@ public class Entry {
         for (Task x: t1) {
             for (Task y: t2) {
                 if (!x.getUUID().equals(y.getUUID())) {
-                    System.out.println("Not the same task...");
+                    // System.out.println("Not the same task...");
                     return false;
                 }
             }
         }
         
-        System.out.println("Same Task");
+        // System.out.println("Same Task");
         return true;
     }
 

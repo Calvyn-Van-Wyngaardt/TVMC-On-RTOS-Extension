@@ -307,12 +307,12 @@ public class CZone {
         double boundChanged = dbm[x][0].getBound();
         if(dbm[y][x].getBound() + cc.getDiffBound().getBound() < 0)	{
             dbm[0][0].setBound(-1, true);
-            System.out.println("CC -1:  "+cc.toString());
+            // System.out.println("CC -1:  "+cc.toString());
         }
         else if (cc.getDiffBound().getBound() < dbm[x][y].getBound())   {
             dbm[x][y].setBound(cc.getDiffBound().getBound(), cc.getDiffBound().getLessEqualTo());
             //canonicalizing/closing Zone
-            System.out.println("CC OK:  "+cc.toString());
+            // System.out.println("CC OK:  "+cc.toString());
             
             for(int i=0;i<size;i++)
                 for(int j=0;j<size;j++)     {
@@ -322,7 +322,7 @@ public class CZone {
                        dbm[i][j].setBound(dbm[i][y].getBound()+dbm[y][j].getBound(), true);
                 }
         }
-        System.out.println(dbm[x][0].getBound()+" and "+ boundChanged);
+        // System.out.println(dbm[x][0].getBound()+" and "+ boundChanged);
         
         if (dbm[x][0].getBound() < boundChanged)	
         	dbm[0][0].setBound(-1, true);

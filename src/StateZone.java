@@ -4,11 +4,10 @@
  * and open the template in the editor.
  */
 import java.util.ArrayList;
-import java.util.Queue;
 
 /**
  *
- * @author User
+ * @author Madoda
  */
 public class StateZone {
     //A zone is a pair (s; ') for a location s and a clock zone '.
@@ -62,7 +61,7 @@ public class StateZone {
         ArrayList<StateZone> nextZones = new ArrayList<>();
         
         StateZone sourceZone = new StateZone(this);
-        System.out.println("SOURCE Transitions: "+outTrans.size());
+        // System.out.println("SOURCE Transitions: "+outTrans.size());
         //zone.printDBM();
         
         
@@ -117,8 +116,8 @@ public class StateZone {
         zoneLocation = edge.getDestinationState();
         
         
-    	System.out.println("Output ZONE: "+this.toString());
-        zone.printDBM();
+    	// System.out.println("Output ZONE: "+this.toString());
+        // zone.printDBM();
         
         return this;
     }
@@ -133,7 +132,7 @@ public class StateZone {
             c.setClocks(zone.getClocks().get(indC1), zone.getClocks().get(0), c.getDiffBound());
         }
         for(ClockConstraint x:cc)
-           System.out.println("Inv CCs: "+x.toString());
+        //    System.out.println("Inv CCs: "+x.toString());
     //    System.out.println("BEFORE ELAPSE: ");
     //    zone.printDBM();
         zone.elapseUp(m);

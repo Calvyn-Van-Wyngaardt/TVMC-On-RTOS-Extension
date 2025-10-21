@@ -69,9 +69,9 @@ public class TMVC {
 //        		m = abstractQ.size();
 //        	} 
 
-       	System.out.println(readZone.getZoneLocation().toString() + " CURRENT State");	
-//        	System.out.println("WAIT SIZE Queue Size: "+ wait.size());
-        System.out.println("ReadZone current zone DBM[0][0]: " + readZone.getZone().getDBM()[0][0].getBound());
+       	// System.out.println(readZone.getZoneLocation().toString() + " CURRENT State");	
+       	// System.out.println("WAIT SIZE Queue Size: "+ wait.size());
+        // System.out.println("ReadZone current zone DBM[0][0]: " + readZone.getZone().getDBM()[0][0].getBound());
             if (readZone.getZoneLocation().getLabel().contains("Err") 
 //        		&& dbmValue < readZone.getZone().getDBM()[0][1].getBound() 
         		|| readZone.getZone().getDBM()[0][0].getBound() < 0 	 
@@ -87,7 +87,7 @@ public class TMVC {
 //        		System.out.println("Iteration Ends - Return 0");
 //        		System.out.println("At State: "+readZone.getZoneLocation().getLabel()
 //        				+ " Zone Validity: "+ readZone.getZone().getDBM()[0][0].getBound() );
-        		System.out.println(readZone.getZoneLocation().toString()+ "State With Err");
+        		// System.out.println(readZone.getZoneLocation().toString()+ "State With Err");
         		return 0;
         	}
 
@@ -265,7 +265,7 @@ public class TMVC {
        }
         
         //System.out.println("Passed Size: " + passed.size()); 
-        System.out.println("NTA Size: " + nta.getStateSet().size());
+        // System.out.println("NTA Size: " + nta.getStateSet().size());
         wait.forEach((waiting) -> { 
             System.out.println("WAITING: " + waiting.toString());
         });
@@ -324,7 +324,7 @@ public class TMVC {
         State currentState = nta.getStateSet().get(0);  //Find start state
         //System.out.print("CurrentIndex: " + currentStateIndex);
         //System.out.print(nta.getStateState().get(currentStateIndex).toString());
-        nta.print();
+        // nta.print();
         ClockZone currentZone = new ClockZone(nta.getClocks());
         //CZone(ArrayList<Clock> c, CZone other)
         //CZone(ArrayList<Clock> c, ArrayList<ClockConstraint> cc)
@@ -345,11 +345,11 @@ public class TMVC {
                 else  
                     delay=0;
                 if(nta.checkTransition(currentState, action))  {
-                    System.out.println("Cur");
+                    // System.out.println("Cur");
                     StateZone target = nta.descreteTransition(currentLocation, action);
                     target = nta.delayTransition(target, delay);
-                    System.out.println("YYYY");
-                    System.out.println();
+                    // System.out.println("YYYY");
+                    // System.out.println();
                     //delayTarget = nta.delayTransition(descreteTarget, delay);
                     //PathRunLocation delayTarget = new PathRunLocation();
                     //threeValue = Satatisfied(currentLocation,queueFront.getDeadline()); 

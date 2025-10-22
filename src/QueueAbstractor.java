@@ -29,19 +29,22 @@ public final class QueueAbstractor {
     private final int interval;
     private String label;
     private boolean patternDetected;
-    private boolean periodicTasksPresent = false;
     private HashMap<String, Double> originalDeadlineValues;
     private HashMap<String, Double> originalPeriodValues;
     private TaskGenerator taskGen;
     private boolean dataCut = false;
+    private Stack<Task> patternFound;
+    private int originalConcreteQueueSize;
     
     public QueueAbstractor(int k, boolean t, TaskGenerator tg, int procSz)    {
         tempPool = new LinkedList<>();
+        originalConcreteQueueSize = 0;
         originalDeadlineValues = new HashMap<>();
         repeatingTasks = new LinkedList<>();
     	patternDetected = false;
         tvModelChecker = new TMVC();
         processorSet = generateProcessorSet(procSz);
+        patternFound = new Stack<>();
         originalPeriodValues = new HashMap<>();
     //concreteTaskQueue = generateRandomConcreteQueue(tg.getTaskSet().size());
         concreteTaskQueue = new LinkedList<>();
@@ -83,6 +86,8 @@ public final class QueueAbstractor {
     
     public QueueAbstractor()    {
         tempPool = new LinkedList<>();
+        originalConcreteQueueSize = 0;
+        patternFound = new Stack<>();
         originalPeriodValues = new HashMap<>();
         originalDeadlineValues = new HashMap<>();
         repeatingTasks = new LinkedList<>();
@@ -95,7 +100,6 @@ public final class QueueAbstractor {
         automataArray = new ArrayList<>();
         counterPath = new ArrayList<>();
         abstractTaskQueue = new LinkedList<>();
-        new Task("",0,0,0,0);
         interval = 0;
     }
          
@@ -148,8 +152,6 @@ public final class QueueAbstractor {
             Task p = concreteTaskQueue.remove();
             
             if (p.isPeriodic()) {
-                periodicTasksPresent = true;
-
                 Task newTask = new Task(p);
                 repeatingTasks.add(newTask);
             }
@@ -208,8 +210,8 @@ public final class QueueAbstractor {
         int threeValue = 1;
         int iteration = 0;
         double abstractZn = 0.0; //new ClockZone();
-        boolean poolReady = false;
-        int originalConcreteQueueSize = concreteTaskQueue.size();
+        // boolean poolReady = false;
+        originalConcreteQueueSize = concreteTaskQueue.size();
         int tasksProcessed = 0;
 
         // System.out.println("QueueAbstractor - [queueAbstraction]: Entering while(concreteTaskQueue != empty)");
@@ -405,13 +407,21 @@ public final class QueueAbstractor {
         }
 
         // if (tasksProcessed >= 8000) {
-        //     System.out.println("=============================");
-        //     System.out.println("Chain of all repeated tasks: ");
-        //     int i = 0;
-        //     for (Task t: repeatingTasks) {
-        //         System.out.println("\t- " + t.toString() + " => " + i);
-        //         i += 1;
-        //     }
+            System.out.println("=============================");
+            System.out.println("Chain of all repeated tasks: ");
+            int i = 0;
+            for (Task t: repeatingTasks) {
+                System.out.println("\t- " + t.toString() + " => " + i);
+                i += 1;
+            }
+
+            System.out.println("=============================");
+            System.out.println("Pattern found:");
+            for (int j = 1; j < patternFound.size(); j++) {
+                System.out.println("\t" + j + ") - " + patternFound.get(j).getLabel());
+            }
+            
+            
         // }
 
         // System.out.println("QueueAbstractor - [queueAbstraction]: ConcreteQueue processed with no failed schedule");
@@ -430,24 +440,23 @@ public final class QueueAbstractor {
         // System.out.println("QueueAbstractor - [findPattern]: Setting up indices...");
         // System.out.println("QueueAbstractor - [findPattern]: Num repeating tasks: " + repeatingTasks.size());
         
+        // Instead of cutting the first 5% of records, we cut the first concreteQueue - 
+        // with immediate tasks present - from the dataset
         if (!dataCut) {
-            //Cut off 5% of records...
-            int startIndex = (int) Math.round(repeatingTasks.size() * 0.05);
             LinkedList<Task> newRepeatingTasks = new LinkedList<>();
-            for (int idx = startIndex; idx < repeatingTasks.size(); idx++) {
+            for (int idx = originalConcreteQueueSize; idx < repeatingTasks.size(); idx++) {
                 newRepeatingTasks.add(repeatingTasks.get(idx));
             }
             
             repeatingTasks = newRepeatingTasks;
         }
 
-
         Task firstTask = repeatingTasks.get(0);
         Stack<Integer> indices = new Stack<>();
         Integer[] indicesArr = new Integer[1];
         
         for (int i = 0; i < repeatingTasks.size(); i++) {
-            Task curr = repeatingTasks.get(i);
+            // Task curr = repeatingTasks.get(i);
             // System.out.println("QueueAbstractor - [findPattern]: " + firstTask.getLabel() + " == " + curr.getLabel() + "?");
             if (firstTask.getLabel().equals(repeatingTasks.get(i).getLabel())) {
                 indices.push(i);
@@ -486,16 +495,23 @@ public final class QueueAbstractor {
                 // System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",k,i) + ") Size: " + size);
                 
                 if (k != i && size > 3) {
-                    // System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",k,i) + ") Comparing elements: (" + repeatingTasks.get(indicesArr[k]) + ")[" + indicesArr[k] + "] with " + repeatingTasks.get(indicesArr[i])+ ")[" + indicesArr[i] + "]");
+                    System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",k,i) + ") Comparing elements: (" + repeatingTasks.get(indicesArr[k]) + ")[" + indicesArr[k] + "] with " + repeatingTasks.get(indicesArr[i])+ ")[" + indicesArr[i] + "]");
                     // System.out.println(String.format("QueueAbstractor - [findPattern]: RepeatingTasks[%d]: %s", indicesArr[k], repeatingTasks.get(indicesArr[k]).toString() ));
                     // System.out.println(String.format("QueueAbstractor - [findPattern]: RepeatingTasks[%d]: %s", indicesArr[i], repeatingTasks.get(indicesArr[i]).toString() ));
                     boolean match = repeatingTasks.get(indicesArr[k]).getLabel().equals(repeatingTasks.get(indicesArr[i]).getLabel());
-                    // System.out.println(String.format("QueueAbstractor - [findPattern]: Match: %b",  match));
+                    System.out.println(String.format("QueueAbstractor - [findPattern]: Match: %b",  match));
 
                     if (match) {
-                        // System.out.println("====================================================");
-                        // System.out.println("\tStarting to check element by element...");
+                        System.out.println("====================================================");
+                        System.out.println("\tStarting to check element by element...");
                         // int j = 1;
+                        // System.out.println("Adding the following task: " + repeatingTasks.get(indicesArr[k]));
+                        patternFound.push(repeatingTasks.get(indicesArr[k]));
+                        // System.out.println("Pattern Found SOFAR: ");
+                        // for (Task t: patternFound) {
+                            // System.out.println(t.toString());
+                        // }
+                        
                         boolean allElementsMatch = true;
                         for (int j = 1; j < size; j++) {
                             // System.out.println("J =========== " + j);
@@ -511,53 +527,71 @@ public final class QueueAbstractor {
                                     {
                                         if (repeatingTasks.get(indicesArr[k]+j).getLabel().equals(repeatingTasks.get(indicesArr[i]+j).getLabel())) 
                                         {
+                                            // System.out.println(String.format("%s == %s", repeatingTasks.get(indicesArr[k]+j).getLabel(), repeatingTasks.get(indicesArr[i]+j).getLabel()));
+                                            // System.out.println("Adding the following task: " + repeatingTasks.get(indicesArr[i]+j));
+                                            patternFound.push(repeatingTasks.get(indicesArr[i]+j));
+                                            // System.out.println("Pattern Found SOFAR: ");
+                                            // for (Task t: patternFound) {
+                                                // System.out.println(t.toString());
+                                            // }
                                             // patternLength += 1;
                                             if (j == size - 1 && allElementsMatch) {
                                                 System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",i,k) + ") $$$- MATCH FOUND -$$$");
                                                 return true;
                                             } else {
+                                                // Keep going...
                                                 // System.out.println("QueueAbstractor - [findPattern]: j != size - 1" + "; j = " + j + String.format(";size-1 = %d", size-1));
                                             }
                                         } 
                                         else 
                                         {
+                                            // No Match
+                                            // System.out.println(String.format("%s != %s", repeatingTasks.get(indicesArr[k]+j).getLabel(), repeatingTasks.get(indicesArr[i]+j).getLabel()));
                                             allElementsMatch = false;
+                                            patternFound.clear();
                                             // System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",i,k) + ") NO MATCH!");
-                                            continue;       //No match
                                         }
                                     } 
                                     else
                                     {
+                                        //IndicesArr still too small... skip
                                         // System.out.println("WE WANTED TO CHECK...");
                                         if (indicesArr[k]+j >= repeatingTasks.size()) {
-                                            // System.out.println("BUUUUUTTTTTT (k) => Indices[k]+j > repatingTasks.size()");
+                                            System.out.println("BUUUUUTTTTTT (k) => Indices[k]+j > repatingTasks.size()");
                                         } else if (indicesArr[i]+j >= repeatingTasks.size()) {
-                                            // System.out.println("BUUUUUTTTTTT (i) => Indices[i]+j > repatingTasks.size()");
+                                            System.out.println("BUUUUUTTTTTT (i) => Indices[i]+j > repatingTasks.size()");
                                         }
+                                        allElementsMatch = false;
+                                        patternFound.clear();
                                     }
                             } else {
                                 // System.out.println("INDEX OUT OF BOUNDS BECAUSE YOU'RE TRYING TO ACCES SOMETHING THAT DOESNT EXIST");
-                                continue;
+                                allElementsMatch = false;
+                                patternFound.clear();
                             }
-                            } 
+                        } // END-FOR 
                             // else {
                             //     System.out.println("QueueAbstractor - [findPattern]: (j < size) && (size + j) < repeatingTasks.size() => " + String.format("(%d < %d) && (%d + %d) < repeatingTasks.size() => %b", j, size, size, j, (j < size) && (size + j) < repeatingTasks.size()));
                             // }
-                        } 
+                    } else {
+                        patternFound.clear();
+                    }
+                     // END-IF
                         // else {
                         //     System.out.println("QueueAbstractor - [findPattern]: (size + j) > indicesArr[k]+j => " + String.format("%d > %d", (size+j), (indicesArr[k]+j)));
                         // }
-                    }
-                    else {
-                        System.out.println("DOESN'T MATCHHHH!");
-                    }
-                } 
+                } //END-IF
+                else {
+                    patternFound.clear();
+                    System.out.println("k == i OR size < 3: Skipping...");
+                }
+            } //END-FOR
                 
                 // else {
                 //     System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",i,k) + ") Skipping... ");
                 // }
 
-        }
+        } //END-FOR
 
         //TODO: Add check for LCM and expand 
         // Somehow go through the LinkedList and find a pattern?

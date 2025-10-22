@@ -106,10 +106,18 @@ public class Main {
         			System.out.println("Choose the file containing the taskset: "); 
 					File inputDir = new File("../tasksetInput");
 
+					LinkedList<String> sorted = new LinkedList<>();
 					String[] inputFiles = inputDir.list();
-					for (int f = 0; f < inputFiles.length; f++) {
-						System.out.println(String.format("%d) %s", f, inputFiles[f]));
+					for (String s: inputFiles) {
+						sorted.add(s);
 					}
+
+					Collections.sort(sorted);
+
+					for (int f = 0; f < inputFiles.length; f++) {
+						System.out.println(String.format("%d) %s", f, sorted.get(f)));
+					}
+
 					int fileChosen = scan.nextInt();
                   	String filename = inputFiles[fileChosen];
         			filename = filename.replace(".txt", "");

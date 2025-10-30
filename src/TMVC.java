@@ -26,9 +26,11 @@ public class TMVC {
     }
     
     
+    public void addToTimeline(double time) {
+        timeline += time;
+    }
     
-    
-  public int threeVReachability(TimedAutomata nta, Queue<Task> abstractQ, ArrayList<StateZone> counterPath)    {//abstractQ-->abstractBuffer
+    public int threeVReachability(TimedAutomata nta, Queue<Task> abstractQ, ArrayList<StateZone> counterPath)    {//abstractQ-->abstractBuffer
 	    
 	//  	System.out.println("*****************Iteration Starts**************");  
         ArrayList<StateZone> wait = new ArrayList<>();

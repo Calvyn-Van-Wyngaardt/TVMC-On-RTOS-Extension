@@ -291,9 +291,13 @@ public final class Task implements Comparable<Task> {
     	responseRatio = (o >=0) ? o : 0;
     }
 
+    public void setuuid(UUID newUUID) {
+        this.uuid = newUUID;
+    }
+
     public boolean isSameTask(Task t) {
         String uuidString1 = uuid.toString();
-        String uuidString2 = t.getUUID().toString();
+        String uuidString2 = t.getUUID();
 
         return uuidString1.equals(uuidString2);
     }
@@ -336,6 +340,10 @@ public final class Task implements Comparable<Task> {
 
     public String getUUID() {
         return uuid.toString();
+    }
+
+    public UUID getUUIDObject() {
+        return uuid;
     }
 
     public boolean isPeriodic() {

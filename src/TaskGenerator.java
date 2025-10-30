@@ -15,6 +15,7 @@ public class TaskGenerator {
         int numberOfTasks;
         double utilization; 
         int seed;
+        HashMap<String, Double> timeBetweenSubtasks;
 
 	public TaskGenerator(String l, int setSize, double utilize, int _seed) {
 		label = l;
@@ -24,7 +25,17 @@ public class TaskGenerator {
         seed = _seed;        
 	}
 	
-	public TaskGenerator(String filename, double utilize, int _seed) {
+    public TaskGenerator(String filename, double utilize, int _seed) {
+		label = filename;
+        taskSet = new ArrayList<>();
+        readTaskSet(filename);
+        numberOfTasks = taskSet.size();
+        utilization = utilize;
+        seed = _seed;
+        // System.out.println(label+" TASKSET SIZE: "+numberOfTasks+" "+seed+" "+utilization);
+	}
+
+	public TaskGenerator(String filename, double utilize, int _seed, HashMap<String, Double> time) {
 		label = filename;
         taskSet = new ArrayList<>();
         readTaskSet(filename);
@@ -32,7 +43,13 @@ public class TaskGenerator {
         utilization = utilize;
         seed = _seed;
         System.out.println(label+" TASKSET SIZE: "+numberOfTasks+" "+seed+" "+utilization);
+        timeBetweenSubtasks = time;
 	}
+
+    public HashMap<String, Double> getTimeBetweenSubTasks() {
+        return timeBetweenSubtasks;
+    }
+    
 
     public int getNumberOfTasks() {
         return numberOfTasks;
@@ -239,7 +256,6 @@ public class TaskGenerator {
             }
             writer.close();
         }
-        
         
         
         

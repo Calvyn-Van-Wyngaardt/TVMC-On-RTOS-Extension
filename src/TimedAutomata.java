@@ -738,23 +738,23 @@ public class TimedAutomata {
 //               String label=outTrans.getTimedAction().getSymbol().substring(0, 2);
         	   if(outTrans.getTimedAction().getSymbol().contains("enque"))	{
             		b = enqueueAction(p, outTrans, loc);
-            		System.out.println(" Enqueue IF Reached: "+ b);
+            		// System.out.println(" Enqueue IF Reached: "+ b);
             	}
             	else if ((outTrans.getTimedAction().getSymbol().contains("acquire")))	{
             		//outLocations.add(outTrans);
             		b = acquireAction(p, outTrans, deque);
-            		System.out.println(" Acquire IF Reached: "+ b);
+            		// System.out.println(" Acquire IF Reached: "+ b);
             	}
             	else if ((outTrans.getTimedAction().getSymbol().contains("release"))) {
             		b = releaseAction(outTrans);
-            		System.out.println(" Release IF Reached: "+ b);
+            		// System.out.println(" Release IF Reached: "+ b);
             	}
             	else if ((outTrans.getTimedAction().getSymbol().contains("abort")))	{
             		b = abortAction(p, outTrans);
-            		System.out.println(" Abort IF Reached: "+ b);
+            		// System.out.println(" Abort IF Reached: "+ b);
             	}
             	else	{
-            		System.out.println("Default: "+ outTrans.getTimedAction().getSymbol());
+            		// System.out.println("Default: "+ outTrans.getTimedAction().getSymbol());
             	}
             	
             	/*if(deque)	{
@@ -767,7 +767,7 @@ public class TimedAutomata {
             	}
             }
         }
-        System.out.println("OUT LOCATION SIZE: "+ outLocations.size() );
+        // System.out.println("OUT LOCATION SIZE: "+ outLocations.size() );
         return outLocations;
     }
     

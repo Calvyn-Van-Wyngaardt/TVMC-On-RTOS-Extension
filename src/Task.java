@@ -337,6 +337,17 @@ public final class Task implements Comparable<Task> {
         return taskLabel;
     }
 
+    public String getSubtaskLabel() {
+        String subTaskLabel = label;
+        int dotIndex = subTaskLabel.indexOf('.', 0);
+        if (dotIndex != -1) {
+            subTaskLabel = subTaskLabel.substring(dotIndex);
+            subTaskLabel = subTaskLabel.replace(".", "");
+        }
+
+        return subTaskLabel;
+    }
+
     public boolean equals(Task t) {
         return (t.getUUID().equals(getUUID()));
     }

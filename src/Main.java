@@ -124,6 +124,7 @@ public class Main {
 						tempFile = subtasks.createAndWriteToIntermediateFile();
 						System.out.println("Subtasks created:");
 						System.out.println(subtasks.toString());
+						// taskGen = new TaskGenerator(filename + "-intermediate", 0.8, i*5, subtasks.getTimeBetweenSubTasks(), subtasks.getOriginalPeriodValues());
 						taskGen = new TaskGenerator(filename + "-intermediate", 0.8, i*5, subtasks.getTimeBetweenSubTasks());
 						label = label + "-intermediate";
 						// return;
@@ -132,7 +133,10 @@ public class Main {
         		else 
 					return;
         		
-        		// taskGen.taskSetSort(policyId);
+				if (policyId != 5) {
+					taskGen.taskSetSort(policyId-1);
+				}
+
 				System.out.println("Task Set");
         		taskGen.print(); 
         		

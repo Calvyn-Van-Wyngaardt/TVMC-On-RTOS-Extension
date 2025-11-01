@@ -154,10 +154,10 @@ public final class QueueAbstractor {
     	}
     	abstractTaskQueue.clear();
 
-        System.out.println("These are the tasks in the concrete Queue:");
-        for (Task t: concreteTaskQueue) {
-            System.out.println(t.toString());
-        }
+        // System.out.println("These are the tasks in the concrete Queue:");
+        // for (Task t: concreteTaskQueue) {
+        //     System.out.println(t.toString());
+        // }
 
         for (int i=0; i < interval; i++)  { //|| !concreteTaskQueue.isEmpty()
             if(concreteTaskQueue.isEmpty())
@@ -176,16 +176,16 @@ public final class QueueAbstractor {
                 repeatingTasks.add(newTask);
             }
             
-            System.out.println("Task in Spotlight: "+ p.toString()); 
+            // System.out.println("Task in Spotlight: "+ p.toString()); 
             abstractTaskQueue.add(p);
             TimedAutomata temp = new TimedAutomata(p.getTaskAutomata());
             automataArray.add(temp);
         }
 
-        System.out.println("After putting some in spotlight, this remains: ");
-        for (Task t : concreteTaskQueue) {
-            System.out.println(t.toString());
-        }
+        // System.out.println("After putting some in spotlight, this remains: ");
+        // for (Task t : concreteTaskQueue) {
+        //     System.out.println(t.toString());
+        // }
 
         // This then adds tasks that aren't ready...
         // if (concreteTaskQueue.isEmpty()) {
@@ -199,13 +199,13 @@ public final class QueueAbstractor {
         
         if(!concreteTaskQueue.isEmpty()){
             Task shade = new Task(concreteTaskQueue);
-            System.out.println("Abstract Task in Spotlight: "+ shade.toString());
+            // System.out.println("Abstract Task in Spotlight: "+ shade.toString());
             abstractTaskQueue.add(shade);
             automataArray.add(shade.getTaskAutomata());
         }
         
-        for(Task shade:concreteTaskQueue)
-        	System.out.println("Task in Shade: "+ shade.toString());
+        // for(Task shade:concreteTaskQueue)
+        	// System.out.println("Task in Shade: "+ shade.toString());
         
         processorSet.forEach((processorSet1) -> {
             TimedAutomata temp = new TimedAutomata(processorSet1.getAutomata());
@@ -239,22 +239,22 @@ public final class QueueAbstractor {
         	automataArray.clear();
             Double currentTime = tvModelChecker.getTimeline();
 
-            System.out.println("Current Concrete Queue:");
-            for (Task t: concreteTaskQueue) {
-                System.out.println("- " + t.toString());
-            }
+            // System.out.println("Current Concrete Queue:");
+            // for (Task t: concreteTaskQueue) {
+            //     System.out.println("- " + t.toString());
+            // }
 
-            System.out.println("Current Temp Pool:");
-            for (Task t: tempPool) {
-                System.out.println("- " + t.toString());
-            }
+            // System.out.println("Current Temp Pool:");
+            // for (Task t: tempPool) {
+            //     System.out.println("- " + t.toString());
+            // }
 
             //Check for ready tasks and add them to the concreteQueue...
             for (int i = 0; i < tempPool.size(); i++) {
                 Task curr = tempPool.get(i);
 
                 if (currentTime >= curr.getPeriod()) {
-                    System.out.println("Adding the following task to the concreteQueue: " + curr.toString());
+                    // System.out.println("Adding the following task to the concreteQueue: " + curr.toString());
                     tempPool.remove(i);
                     concreteTaskQueue.add(curr);
                 }
@@ -270,7 +270,7 @@ public final class QueueAbstractor {
                     }
                 }
                 double difference = nearestExecTime - currentTime;
-                System.out.println("Adding difference " + difference + " to timeline -- no ready tasks...");
+                // System.out.println("Adding difference " + difference + " to timeline -- no ready tasks...");
                 tvModelChecker.addToTimeline(difference);
             } 
             else 
@@ -292,7 +292,7 @@ public final class QueueAbstractor {
                             // If not, then "Busy with first round..."
                             if (t.getPeriod() != originalPeriodValues.get(t.getLabel())) {
                             //if (tasksProcessed >= originalConcreteQueueSize) {
-                                System.out.println("\t-Busy with rounds > 1...");
+                                // System.out.println("\t-Busy with rounds > 1...");
                                 Task newTask = new Task(t);
                                 //In this one we modify the value before checking takes place
                                 // Double deadlineValue = originalDeadlineValues.get(t.getLabel());
@@ -345,7 +345,7 @@ public final class QueueAbstractor {
                                 // tempPool.add(newTask);
                                 // repeatingTasks.add(newTask);
                             } else {
-                                System.out.println("\t-Still busy with the first round...");
+                                // System.out.println("\t-Still busy with the first round...");
                                 Task newTask = new Task(t);
 
                                 // In this one we modify the value before placing it into the tempQueue to be checked.
@@ -401,9 +401,9 @@ public final class QueueAbstractor {
                 } 
                 currentTime = tvModelChecker.getTimeline();
     
-                System.out.println("About to generate abstract queue...");
+                // System.out.println("About to generate abstract queue...");
                 generateAbstractQueue(abstractZn);
-                System.out.println("Just generated abstract queue...");
+                // System.out.println("Just generated abstract queue...");
                 TimedAutomata NTA;
                 NTA = new TimedAutomata(automataArray.get(0));
                 
@@ -422,7 +422,7 @@ public final class QueueAbstractor {
                     // NTA.print();
                 }
                 
-                System.out.println("Time before: " + tvModelChecker.timeline);
+                // System.out.println("Time before: " + tvModelChecker.timeline);
                 // Should update the timeline after this...
                 
                 // Right before we check the task's schedulability, we prepare for the next iteration
@@ -431,21 +431,36 @@ public final class QueueAbstractor {
                 for (int k = 0; k < tasksToBeChecked.size(); k++) {
                     Double newTime = currentTime;
                     Task currTask = tasksToBeChecked.get(k);
-                    for (Task t : tasksToBeChecked) {
-                        
-                        if (Double.valueOf(t.getTaskLabel()) < Double.valueOf(currTask.getTaskLabel())) {
-                            newTime += t.getWCET();
+                    if (currTask.isPeriodic()) {
+                        for (Task t : tasksToBeChecked) {
+                            
+                            if (Double.valueOf(t.getTaskLabel()) < Double.valueOf(currTask.getTaskLabel())) {
+                                newTime += t.getWCET();
+                            }
                         }
+    
+                        //Here we set the new Period & Deadline values...
+                        // System.out.println("currTask: " + currTask.getLabel());
+                        // for (Map.Entry<String, Double> entry : originalPeriodValues.entrySet()) {
+                        //     String key = entry.getKey();
+                        //     Double value = entry.getValue();
+                        //     // System.out.println("Key: " + key + "\tValue: " + value);
+                        // } 
+
+
+
+                        // System.out.println("ENTRY TIME!!! Old Period value: " + currTask.getPeriod());    
+                        // System.out.println("-> Original Period Value: " + originalPeriodValues.get(currTask.getLabel()) + " for task " + currTask.getLabel());
+
+                        currTask.setPeriod(newTime + currTask.getWCET() + originalPeriodValues.get(currTask.getLabel()));
+                        // System.out.println("ENTRY TIME!!! New Period value: " + currTask.getPeriod());
+                        currTask.setDeadline(currTask.getPeriod() + deadlineDifferences.get(currTask.getLabel()));
+                        currTask.setTaskAutomata();
+    
+                        currEntry.addTask(currTask);
+                        tempPool.add(currTask);
+                        repeatingTasks.add(currTask);
                     }
-
-                    //Here we set the new Period & Deadline values...
-                    currTask.setPeriod(newTime + currTask.getWCET() + originalPeriodValues.get(currTask.getLabel()));
-                    currTask.setDeadline(currTask.getPeriod() + deadlineDifferences.get(currTask.getLabel()));
-                    currTask.setTaskAutomata();
-
-                    currEntry.addTask(currTask);
-                    tempPool.add(currTask);
-                    repeatingTasks.add(currTask);
                 }
                 
                 currEntry.setTime(currentTime);
@@ -453,14 +468,14 @@ public final class QueueAbstractor {
                 // iterationEntries.add(currEntry);
                 
                 threeValue = tvModelChecker.threeVReachability(NTA, abstractTaskQueue, counterPath);
-                System.out.println("Time after: " + tvModelChecker.timeline);
+                // System.out.println("Time after: " + tvModelChecker.timeline);
                 // Here we update the task period values...
 
                 
 
                 abstractZn = tvModelChecker.timeline;
                 // double timeElapsed = tvModelChecker.getElapsedTime();
-                System.out.println("Timeline: " + abstractZn);
+                // System.out.println("Timeline: " + abstractZn);
                 // System.out.println("Time elapsed: " + timeElapsed);
                 iteration++;
 
@@ -468,7 +483,7 @@ public final class QueueAbstractor {
                     if (i < concreteTaskQueue.size()) {
                         tasksProcessed += 1;
                     }
-                    System.out.println("\t\t\tTasks Processed: " + tasksProcessed);
+                    // System.out.println("\t\t\tTasks Processed: " + tasksProcessed);
                 }
 
                 writeOnPath("Clocks= "+NTA.getClocks().size()+" States= "+NTA.getStateSet().size()+" Trans="+NTA.getTransitions().size()+"; \n", "Output"+label+".txt"); 
@@ -529,6 +544,7 @@ public final class QueueAbstractor {
         
         // Instead of cutting the first 5% of records, we cut the first concreteQueue - 
         // with immediate tasks present - from the dataset
+
         if (!dataCut) {
             LinkedList<Task> newRepeatingTasks = new LinkedList<>();
             for (int idx = originalConcreteQueueSize; idx < repeatingTasks.size(); idx++) {
@@ -539,8 +555,9 @@ public final class QueueAbstractor {
 
             dataCut = true;
         }
-        
-        Task firstTask = repeatingTasks.get(0);
+        Random rand = new Random();
+        int index = rand.nextInt(0, repeatingTasks.size());
+        Task firstTask = repeatingTasks.get(index);
         Stack<Integer> indices = new Stack<>();
         Integer[] indicesArr = new Integer[1];
         
@@ -576,23 +593,32 @@ public final class QueueAbstractor {
         //Keeps track of indicesIndex...
         int k = 0;
 
+        Long startTime = System.currentTimeMillis();
+        Long threshold = Long.valueOf(100);
+        
         // 'k' is the index tracking the current Pos in indices array for 1st element to be compared.
         for (k = 0; k < indicesArr.length; k++) {
+            
             for (int i = k+1 ; i < indicesArr.length; i++) {
                 //If the first task matches a task using indices
                 int size = indicesArr[i] - indicesArr[k];
                 // System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",k,i) + ") Size: " + size);
                 
                 if (k != i && size > 3) {
-                    System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",k,i) + ") Comparing elements: (" + repeatingTasks.get(indicesArr[k]) + ")[" + indicesArr[k] + "] with " + repeatingTasks.get(indicesArr[i])+ ")[" + indicesArr[i] + "]");
+                    // System.out.println("QueueAbstractor - [findPattern]: " + String.format("%d-%d",k,i) + ") Comparing elements: (" + repeatingTasks.get(indicesArr[k]) + ")[" + indicesArr[k] + "] with " + repeatingTasks.get(indicesArr[i])+ ")[" + indicesArr[i] + "]");
                     // System.out.println(String.format("QueueAbstractor - [findPattern]: RepeatingTasks[%d]: %s", indicesArr[k], repeatingTasks.get(indicesArr[k]).toString() ));
                     // System.out.println(String.format("QueueAbstractor - [findPattern]: RepeatingTasks[%d]: %s", indicesArr[i], repeatingTasks.get(indicesArr[i]).toString() ));
                     boolean match = repeatingTasks.get(indicesArr[k]).getLabel().equals(repeatingTasks.get(indicesArr[i]).getLabel());
-                    System.out.println(String.format("QueueAbstractor - [findPattern]: Match: %b",  match));
-
+                    // System.out.println(String.format("QueueAbstractor - [findPattern]: Match: %b",  match));
+                    
                     if (match) {
-                        System.out.println("====================================================");
-                        System.out.println("\tStarting to check element by element...");
+                        // System.out.println("====================================================");
+                        // System.out.println("\tStarting to check element by element...");
+                        //TIMEOUT Check
+                        if (System.currentTimeMillis() - startTime > threshold) {
+                            // System.out.println("TIMEOUT!");
+                            return false;
+                        }
                         // int j = 1;
                         // System.out.println("Adding the following task: " + repeatingTasks.get(indicesArr[k]));
                         patternFound.push(repeatingTasks.get(indicesArr[k]));
@@ -646,9 +672,9 @@ public final class QueueAbstractor {
                                         //IndicesArr still too small... skip
                                         // System.out.println("WE WANTED TO CHECK...");
                                         if (indicesArr[k]+j >= repeatingTasks.size()) {
-                                            System.out.println("BUUUUUTTTTTT (k) => Indices[k]+j > repatingTasks.size()");
+                                            // System.out.println("BUUUUUTTTTTT (k) => Indices[k]+j > repatingTasks.size()");
                                         } else if (indicesArr[i]+j >= repeatingTasks.size()) {
-                                            System.out.println("BUUUUUTTTTTT (i) => Indices[i]+j > repatingTasks.size()");
+                                            // System.out.println("BUUUUUTTTTTT (i) => Indices[i]+j > repatingTasks.size()");
                                         }
                                         allElementsMatch = false;
                                         patternFound.clear();
@@ -672,7 +698,7 @@ public final class QueueAbstractor {
                 } //END-IF
                 else {
                     patternFound.clear();
-                    System.out.println("k == i OR size < 3: Skipping...");
+                    // System.out.println("k == i OR size < 3: Skipping...");
                 }
             } //END-FOR
                 

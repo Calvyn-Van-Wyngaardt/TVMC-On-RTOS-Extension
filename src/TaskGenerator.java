@@ -141,12 +141,10 @@ public class TaskGenerator {
         	    } catch (IndexOutOfBoundsException e) {
                     System.out.println("Error reading textfile: One of the following values are missing:\ntaskName\tWCET\tDeadline\tPeriod");
                     e.printStackTrace();
-                    return;
                 }
                 catch (Exception e) {
         	      System.out.println("An error occurred.");
         	      e.printStackTrace();
-                  return;
         	    }
         }
         

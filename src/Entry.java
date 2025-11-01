@@ -6,10 +6,12 @@ public class Entry {
     private Task[] tasks;
     private int sameTask;
     private int diffTask;
+    private Double currTime;
 
     public Entry() {
         permutations = new LinkedList<>();
         tasks = new Task[0];
+        currTime = 0.0;
     }
 
     public Entry(Task[] t) {
@@ -18,6 +20,26 @@ public class Entry {
         for (int i = 0; i < t.length; i++) {
             tasks[i] = new Task(t[i]);
         }
+        currTime = 0.0;
+    }
+
+    public void setTasks(Task[] newTaskset) {
+        tasks = newTaskset;
+    }
+
+    public Task[] getTasks() {
+        return tasks;
+    }
+
+    public boolean replaceTask(Task t) {
+        for (int i = 0; i < tasks.length; i++) {
+            if (tasks[i].getUUID().equals(t.getUUID())) {
+                tasks[i] = t;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void addTask(Task t) {
@@ -30,6 +52,10 @@ public class Entry {
         tasks = newTaskArray;
     }
 
+    public Queue<Task[]> getPermutations() {
+        return permutations;
+    }
+
     public void getAllPossiblePermutations() {
         sameTask = 0;
         diffTask = 0;
@@ -39,6 +65,14 @@ public class Entry {
         System.out.println("Calculated number of permutations: " + permutations.size());
         System.out.println("Same Task count: " + sameTask);
         System.out.println("Different Task count: " + diffTask);
+    }
+
+    public void setTime(Double time) {
+        currTime = time;
+    }
+
+    public Double getTime() {
+        return currTime;
     }
 
     public String printTaskArray(Task[] currPerm) {

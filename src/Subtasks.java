@@ -3,6 +3,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Stack;
 
 public class Subtasks {
     private String taskSetLabel;
@@ -10,6 +11,8 @@ public class Subtasks {
     private ArrayList<Task> subtasks;
     private double timeslice;
     private HashMap<String, Double> timeBetweenSubTasks;
+    private HashMap<String, Stack<Task>> groupedSubtasks;
+    private HashMap<String, Double> maxDeadline;
 
     public Subtasks() {
         taskSetLabel = "EMPTY";
@@ -17,6 +20,8 @@ public class Subtasks {
         subtasks = new ArrayList<>();
         timeslice = 0;
         timeBetweenSubTasks = new HashMap<>();
+        groupedSubtasks = new HashMap<>();
+        maxDeadline = new HashMap<>();
     }
 
     public Subtasks(TaskGenerator taskGen, double t) {
@@ -25,6 +30,16 @@ public class Subtasks {
         subtasks = new ArrayList<>();
         timeslice = t;
         timeBetweenSubTasks = new HashMap<>();
+        groupedSubtasks = new HashMap<>();
+
+        for (int i = 0; i < tasks.size(); i++) {
+            String taskLbl = tasks.get(i).getTaskLabel();
+            System.out.println("Task Label: " + taskLbl);
+            System.out.println("Adding new Stack for task: " + tasks.get(i).getTaskLabel());
+            groupedSubtasks.put(tasks.get(i).getTaskLabel(), new Stack<>());
+        }
+
+        maxDeadline = new HashMap<>();
     }
 
     public void calculateTimeBetweenSubTasks() {
@@ -36,6 +51,44 @@ public class Subtasks {
                 timeBetweenSubTasks.put(st.getLabel(), timebetween);
             } else {
                 // System.out.println("Skipping...");
+            }
+        }
+    }
+
+    public void updateGroupedSubtasks(Task subtaskToAdd) {
+        String taskLabel = subtaskToAdd.getTaskLabel();
+        Stack<Task> currStack = groupedSubtasks.get(taskLabel);
+        currStack.add(subtaskToAdd);
+        groupedSubtasks.put(taskLabel, currStack);
+    }
+    public void updateSubtaskPeriodValues() {
+        for (int i = 0; i < tasks.size(); i++) {
+            Task currTask = tasks.get(i);
+            Stack<Task> currGroup = groupedSubtasks.get(currTask.getTaskLabel());
+            // Double maxPeriod = 0.0;
+            // for (int j = 0; j < currGroup.size(); j++) {
+            //     Double currSubtaskPeriod = currGroup.get(i).getPeriod();
+            //     if (currSubtaskPeriod > maxPeriod) {
+            //         maxPeriod = currSubtaskPeriod;
+            //     }
+            // }
+
+            Double maxPeriod = maxDeadline.get(currTask.getTaskLabel());
+            maxPeriod += currTask.getPeriod();
+
+
+            // //Add original Period value to the max val
+            // System.out.println("Max Period before: " + maxPeriod);
+            // maxPeriod += tasks.get(i).getPeriod();
+            // System.out.println("Adding period value to max: " + tasks.get(i).getPeriod());
+            // System.out.println("Max Period after: " + maxPeriod);
+
+            //Set all subtasks' period values to the max val
+            for (int j = 0; j < subtasks.size(); j++) {
+                Task currSubTask = subtasks.get(j);
+                if (currSubTask.getTaskLabel().equals(String.format("%d", i+1))) {
+                    subtasks.get(j).setPeriod(maxPeriod);
+                }
             }
         }
     }
@@ -90,15 +143,6 @@ public class Subtasks {
         return newPeriod;
     }
 
-    // Might use these if the task model changes to relative time...
-    // public int calculatePeriod(Task t) {
-    //     //
-    // }
-
-    // public int calculateDeadline(Task t) {
-    //     //
-    // }
-
     public int getMaxSubtasks(ArrayList<Integer> tasks) {
         int max = 0;
         Iterator<Integer> it = tasks.iterator();
@@ -141,7 +185,8 @@ public class Subtasks {
                     if (currSubTask < numSubtasksPerTask.get(currTaskIndex) - 1) {
                         if (currTask.isPeriodic()) {
                             subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, currSubTask + 1), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
-                            updateSubtaskPeriod();
+                            // updateSubtaskPeriod();
+
                         } else {
                             subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, currSubTask + 1), timeslice, 0, (totalDeadline + timeslice), defaultOccurrance));
                         }
@@ -154,7 +199,7 @@ public class Subtasks {
                         if (remainder > 0) {
                             if (currTask.isPeriodic()) {
                                 subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), remainder, (totalPeriod + remainder), (totalDeadline + remainder), defaultOccurrance));
-                                updateSubtaskPeriod();
+                                // updateSubtaskPeriod();
                             } else {
                                 subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), remainder, 0, (totalDeadline + remainder), defaultOccurrance));
                             }
@@ -164,7 +209,7 @@ public class Subtasks {
                         } else {
                             if (currTask.isPeriodic()) {
                                 subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance));
-                                updateSubtaskPeriod();
+                                // updateSubtaskPeriod();
                             } else {
                                 subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), timeslice, 0, (totalDeadline + timeslice), defaultOccurrance));
                             }
@@ -172,6 +217,13 @@ public class Subtasks {
                             totalPeriod += timeslice;
                         }
                     }
+
+                    Task newTask = subtasks.get(subtasks.size()-1);
+                    System.out.println("Getting the stack for: " + newTask.getTaskLabel());
+                    Stack<Task> currStack = groupedSubtasks.get(newTask.getTaskLabel());
+                    currStack.add(newTask);
+                    groupedSubtasks.put(newTask.getTaskLabel(), currStack);
+                    maxDeadline.put(newTask.getTaskLabel(), newTask.getDeadline());
                 } else {
                     // System.out.println(String.format("Subtasks - [createSubTasks]: Current subtask index (%d) does not exist for task %d", currSubTask, (currTaskIndex + 1)));
                 }
@@ -179,6 +231,7 @@ public class Subtasks {
             }
         }
 
+        updateSubtaskPeriodValues();
 
         // For later usage
         calculateTimeBetweenSubTasks();

@@ -23,10 +23,12 @@ public final class Task implements Comparable<Task> {
     private TimedAutomata taskAutomata;
     // private static int id;
     private UUID uuid;
+    private String id;
     //private Clock processorClock;
     
     public Task(String s, double w, double p, double d, double o) {
         uuid = UUID.randomUUID();
+        id = uuid.toString();
         label = s;
         setWCET(w);
         setPeriod(p);
@@ -42,6 +44,7 @@ public final class Task implements Comparable<Task> {
     
     public Task() {
         uuid = UUID.randomUUID();
+        id = uuid.toString();
         label = "Default";
         setWCET(0);
         setPeriod(0);
@@ -57,6 +60,7 @@ public final class Task implements Comparable<Task> {
     
     public Task(Task other) {
         uuid = UUID.randomUUID();
+        id = other.getId();
         label = other.label;
         wcet = other.wcet;
         period = other.period;
@@ -106,6 +110,14 @@ public final class Task implements Comparable<Task> {
         setDeadline(diffDeadline);
         setAbstracTaskAutomata();
         etVar = 0;
+    }
+
+    public void setId(String newId) {
+        id = newId;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public void setAbstracTaskAutomata()   {
@@ -308,7 +320,21 @@ public final class Task implements Comparable<Task> {
     
     public String getLabel(){
         String out = label.replace("t", "");
+        out = out.replace("T", "");
         return out;
+    }
+
+    public String getTaskLabel() {
+        String taskLabel = label;
+        System.out.println("Label: " + taskLabel);
+        int dotIndex = taskLabel.indexOf('.', 0);
+        taskLabel = getLabel();
+        if (dotIndex != -1) {
+            taskLabel = taskLabel.substring(0, dotIndex);
+            taskLabel = taskLabel.replace(".", "");
+        }
+
+        return taskLabel;
     }
 
     public boolean equals(Task t) {

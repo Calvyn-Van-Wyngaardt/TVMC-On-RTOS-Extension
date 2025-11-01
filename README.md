@@ -26,6 +26,8 @@ The program accepts input from a text file that represents a taskset.
 
 Each line of the text file contains four fields that represent a model of a task. The four fields are: task id number, WECT, Deadline, and Period. 
 
+Note: task names must follow the format "ti" where 't' is a String literal and 'i' is the number of the task. The first task in a taskset must always be "t0". 
+
 An example of the acceptable input file is provided with a caption; 'exampleinput.txt'.
 
 ## Output

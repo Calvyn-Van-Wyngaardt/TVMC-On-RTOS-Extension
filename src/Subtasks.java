@@ -221,9 +221,11 @@ public class Subtasks {
                     Task newTask = subtasks.get(subtasks.size()-1);
                     System.out.println("Getting the stack for: " + newTask.getTaskLabel());
                     Stack<Task> currStack = groupedSubtasks.get(newTask.getTaskLabel());
-                    currStack.add(newTask);
-                    groupedSubtasks.put(newTask.getTaskLabel(), currStack);
-                    maxDeadline.put(newTask.getTaskLabel(), newTask.getDeadline());
+                    if (currStack != null) {
+                        currStack.add(newTask);
+                        groupedSubtasks.put(newTask.getTaskLabel(), currStack);
+                        maxDeadline.put(newTask.getTaskLabel(), newTask.getDeadline());
+                    }
                 } else {
                     // System.out.println(String.format("Subtasks - [createSubTasks]: Current subtask index (%d) does not exist for task %d", currSubTask, (currTaskIndex + 1)));
                 }

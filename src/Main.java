@@ -119,13 +119,23 @@ public class Main {
 					taskGen = new TaskGenerator(filename, 0.8, i*5);
 					
 					if (policyId == 5) {
+						ArrayList<Task> originalTaskSet = taskGen.getTaskSet();
+						HashMap<String, Double> originalPeriodValues = new HashMap<>();
+						HashMap<String, Double> originalDeadlineValues = new HashMap<>();
+
+						// We want the original Period values
+						for (Task t: originalTaskSet) {
+							originalPeriodValues.put(t.getTaskLabel(), t.getPeriod());
+							originalDeadlineValues.put(t.getTaskLabel(), t.getDeadline());
+						}
+						
 						Subtasks subtasks = new Subtasks(taskGen, timeslice);
 						subtasks.createSubTasks();
 						tempFile = subtasks.createAndWriteToIntermediateFile();
 						System.out.println("Subtasks created:");
 						System.out.println(subtasks.toString());
 						// taskGen = new TaskGenerator(filename + "-intermediate", 0.8, i*5, subtasks.getTimeBetweenSubTasks(), subtasks.getOriginalPeriodValues());
-						taskGen = new TaskGenerator(filename + "-intermediate", 0.8, i*5, subtasks.getTimeBetweenSubTasks());
+						taskGen = new TaskGenerator(filename + "-intermediate", 0.8, i*5, subtasks.getTimeBetweenSubTasks(), originalPeriodValues, originalDeadlineValues);
 						label = label + "-intermediate";
 						// return;
 					}

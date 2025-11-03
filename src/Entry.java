@@ -31,6 +31,18 @@ public class Entry {
         return tasks;
     }
 
+    public Task popLast() {
+        Task poppedTask = tasks[tasks.length-1];
+        Task[] newTaskArr = new Task[tasks.length-1];
+        for (int i = 0; i < newTaskArr.length; i++) {
+            newTaskArr[i] = new Task(tasks[i]);
+        }
+
+        tasks = newTaskArr;
+
+        return poppedTask;
+    }
+
     public boolean replaceTask(Task t) {
         for (int i = 0; i < tasks.length; i++) {
             if (tasks[i].getUUID().equals(t.getUUID())) {

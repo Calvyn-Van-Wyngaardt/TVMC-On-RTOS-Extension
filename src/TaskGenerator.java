@@ -1,11 +1,9 @@
 
 
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.File;  // Import the File class
-import java.util.Scanner; // Import the Scanner class to read text files
-
-import java.io.UnsupportedEncodingException;
+import java.io.PrintWriter;  // Import the File class
+import java.io.UnsupportedEncodingException; // Import the Scanner class to read text files
 import java.util.*;
 
 
@@ -16,6 +14,8 @@ public class TaskGenerator {
         double utilization; 
         int seed;
         HashMap<String, Double> timeBetweenSubtasks;
+        HashMap<String, Double> originalPeriodValues;
+        HashMap<String, Double> originalDeadlineValues;
 
 	public TaskGenerator(String l, int setSize, double utilize, int _seed) {
 		label = l;
@@ -23,6 +23,8 @@ public class TaskGenerator {
         numberOfTasks = setSize;
         utilization = utilize;
         seed = _seed;        
+        originalPeriodValues = new HashMap<>();
+        originalDeadlineValues = new HashMap<>();
 	}
 	
     public TaskGenerator(String filename, double utilize, int _seed) {
@@ -32,10 +34,12 @@ public class TaskGenerator {
         numberOfTasks = taskSet.size();
         utilization = utilize;
         seed = _seed;
+        originalPeriodValues = new HashMap<>();
+        originalDeadlineValues = new HashMap<>();
         // System.out.println(label+" TASKSET SIZE: "+numberOfTasks+" "+seed+" "+utilization);
 	}
 
-	public TaskGenerator(String filename, double utilize, int _seed, HashMap<String, Double> time) {
+	public TaskGenerator(String filename, double utilize, int _seed, HashMap<String, Double> time, HashMap<String, Double> ogPeriods, HashMap<String, Double> ogDeadlines) {
 		label = filename;
         taskSet = new ArrayList<>();
         readTaskSet(filename);
@@ -44,12 +48,21 @@ public class TaskGenerator {
         seed = _seed;
         System.out.println(label+" TASKSET SIZE: "+numberOfTasks+" "+seed+" "+utilization);
         timeBetweenSubtasks = time;
-	}
+        originalPeriodValues = ogPeriods;
+        originalDeadlineValues = ogDeadlines;
+    }
+
+    public HashMap<String, Double> getOriginalDeadlineValues() {
+        return originalDeadlineValues;
+    }
+
+    public HashMap<String, Double> getOriginalPeriodValues() {
+        return originalPeriodValues;
+    }
 
     public HashMap<String, Double> getTimeBetweenSubTasks() {
         return timeBetweenSubtasks;
     }
-    
 
     public int getNumberOfTasks() {
         return numberOfTasks;
@@ -125,11 +138,15 @@ public class TaskGenerator {
         	      while (myReader.hasNextLine()) {
         	        String data = myReader.nextLine();
         	        
-        	        String[] splited = data.trim().split("\\s+");
-        	        //Task ts = new Task(splited[0], Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3]), 0); 
-        	        //int i = Integer.parseInt(splited[0]);
+        	        String[] splitted = data.trim().split("\\s+");
+        	        //Task ts = new Task(splitted[0], Integer.parseInt(splitted[1]), Integer.parseInt(splitted[2]), Integer.parseInt(splitted[3]), 0); 
+        	        //int i = Integer.parseInt(splitted[0]);
+                    boolean isSubTask = false;
+                    if (splitted[0].contains(".")) {
+                        isSubTask = true;
+                    }
 
-        	        Task ts = new Task(splited[0], Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3]), 0); 
+        	        Task ts = new Task(splitted[0], Integer.parseInt(splitted[1]), Integer.parseInt(splitted[2]), Integer.parseInt(splitted[3]), 0, isSubTask); 
         	        //Task t = new Task("T"+i,wcet,period, deadline,occurance); //, occurance);   Task(String s, double w, double p, double d)
                     ts.setTaskAutomata();
                     taskSet.add(ts);
@@ -169,7 +186,7 @@ public class TaskGenerator {
                                 
                 if(currentLoad + (wcet/period) <= 1){
                     currentLoad = (int) (currentLoad + (wcet/period));
-                    Task t = new Task("T"+i,wcet,period, deadline,occurance); //, occurance);   Task(String s, double w, double p, double d)
+                    Task t = new Task("T"+i,wcet,period, deadline,occurance, false); //, occurance);   Task(String s, double w, double p, double d)
                     t.setTaskAutomata();
                     taskSet.add(t);
                     i=i+1;

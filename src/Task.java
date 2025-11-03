@@ -21,18 +21,21 @@ public final class Task implements Comparable<Task> {
     private double responseRatio;
     private double etVar;
     private TimedAutomata taskAutomata;
-    // private static int id;
     private UUID uuid;
     private String id;
+    private Integer numIterationsCompleted;
+    private boolean isSubTask;
     //private Clock processorClock;
     
-    public Task(String s, double w, double p, double d, double o) {
+    public Task(String s, double w, double p, double d, double o, boolean isSubTask) {
         uuid = UUID.randomUUID();
         id = uuid.toString();
         label = s;
+        this.isSubTask = isSubTask;
         setWCET(w);
         setPeriod(p);
         setDeadline(d);
+        numIterationsCompleted = 0;
         occurance = o;
         if (wcet == 0)
         	responseRatio = 0;
@@ -46,9 +49,11 @@ public final class Task implements Comparable<Task> {
         uuid = UUID.randomUUID();
         id = uuid.toString();
         label = "Default";
+        isSubTask = false;
         setWCET(0);
         setPeriod(0);
         setDeadline(0);
+        numIterationsCompleted = 0;
         etVar = 0;
         occurance = 0;
         if (wcet <= 0)
@@ -66,6 +71,8 @@ public final class Task implements Comparable<Task> {
         period = other.period;
         deadline = other.deadline;
         occurance = other.occurance;
+        isSubTask = other.isSubTask;
+        numIterationsCompleted = other.getNumIterationsCompleted();
         if (wcet == 0)
         	responseRatio = 0;
         else
@@ -109,7 +116,13 @@ public final class Task implements Comparable<Task> {
         this.setOccurance(leastOccu);
         setDeadline(diffDeadline);
         setAbstracTaskAutomata();
+        // isSubTask = concreteQueue.peek().isSubTask();
+        isSubTask = false;
         etVar = 0;
+    }
+
+    public boolean isSubTask() {
+        return isSubTask;
     }
 
     public void setId(String newId) {
@@ -118,6 +131,14 @@ public final class Task implements Comparable<Task> {
 
     public String getId() {
         return id;
+    }
+
+    public void incrementNumIterations() {
+        numIterationsCompleted += 1;
+    }
+
+    public Integer getNumIterationsCompleted() {
+        return numIterationsCompleted;
     }
 
     public void setAbstracTaskAutomata()   {
@@ -326,7 +347,6 @@ public final class Task implements Comparable<Task> {
 
     public String getTaskLabel() {
         String taskLabel = label;
-        System.out.println("Label: " + taskLabel);
         int dotIndex = taskLabel.indexOf('.', 0);
         taskLabel = getLabel();
         if (dotIndex != -1) {

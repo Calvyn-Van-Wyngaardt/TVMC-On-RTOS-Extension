@@ -11,14 +11,31 @@ The RT-3MVC tool performs the functionalities for schedulability verification fo
 * Earliest Deadline First (EDF)
 * Longest Remaining Time First (LRTF)
 * Highest Response Ration Next (HRRN)
+* Round Robin (RR)
 
 # User Guide
 
 ## Run
 
-i)	Install the lastest [java runtime environment](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
-ii)	Load the program in an IDE.
-iii)	Execute the program by running the Main class.
+1)	Install the lastest [java runtime environment](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
+2)	Open the project's root directory in an IDE or terminal window.
+3)	Compile the project using: 
+```bash
+javac *.java
+```
+4) Run the program, using:
+```bash
+java Main
+```
+
+## Save Output to file
+
+To save stdout to an output file, run the following command:
+
+```bash
+echo "2 1 4 2" | java Main > out.txt
+```
+where "2 1 4 2" is the input to the program, and "out.txt" is the name of the output file.
 
 ## Input
 

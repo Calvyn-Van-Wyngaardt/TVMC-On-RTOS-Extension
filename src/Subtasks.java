@@ -63,6 +63,8 @@ public class Subtasks {
     }
 
     public void updateSubtaskPeriodValues() {
+        
+
         for (int i = 0; i < tasks.size(); i++) {
             Task currTask = tasks.get(i);
             // Here we get all the subtasks grouped together for a specific task
@@ -181,18 +183,16 @@ public class Subtasks {
                 Task currTask = tasks.get(currTaskIndex);
                 
                 if (currSubTask < numSubtasksPerTask.get(currTaskIndex)) {
-                    // System.out.println("Creating task t" + (currTaskIndex+1) + "." + (currSubTask+1));
-                    // System.out.println("Current Sub Task: " + (currSubTask+1));
-                    // System.out.println("Current Task: " + (currTaskIndex+1));
-                    // System.out.println("Number of SubTasksPerTask size: " + numSubtasksPerTask.size());
 
                     if (currSubTask < numSubtasksPerTask.get(currTaskIndex) - 1) {
                         if (currTask.isPeriodic()) {
-                            subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, currSubTask + 1), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance, true));
+                            subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, currSubTask + 1), timeslice, (totalPeriod + timeslice), currTask.getDeadline(), defaultOccurrance, true));
+                            // subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, currSubTask + 1), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance, true));
                             // updateSubtaskPeriod();
 
                         } else {
-                            subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, currSubTask + 1), timeslice, 0, (totalDeadline + timeslice), defaultOccurrance, true));
+                            subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, currSubTask + 1), timeslice, 0, currTask.getDeadline(), defaultOccurrance, true));
+                            // subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, currSubTask + 1), timeslice, 0, (totalDeadline + timeslice), defaultOccurrance, true));
                         }
 
                         totalDeadline += timeslice;
@@ -202,20 +202,24 @@ public class Subtasks {
                         int remainder = (int) (currTask.getWCET() % timeslice);
                         if (remainder > 0) {
                             if (currTask.isPeriodic()) {
-                                subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), remainder, (totalPeriod + remainder), (totalDeadline + remainder), defaultOccurrance, true));
+                                subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), remainder, (totalPeriod + remainder), currTask.getDeadline(), defaultOccurrance, true));
+                                // subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), remainder, (totalPeriod + remainder), (totalDeadline + remainder), defaultOccurrance, true));
                                 // updateSubtaskPeriod();
                             } else {
-                                subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), remainder, 0, (totalDeadline + remainder), defaultOccurrance, true));
+                                subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), remainder, 0, currTask.getDeadline(), defaultOccurrance, true));
+                                // subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), remainder, 0, (totalDeadline + remainder), defaultOccurrance, true));
                             }
 
                             totalDeadline += remainder;
                             totalPeriod += remainder;
                         } else {
                             if (currTask.isPeriodic()) {
-                                subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance, true));
+                                subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), timeslice, (totalPeriod + timeslice), currTask.getDeadline(), defaultOccurrance, true));
+                                // subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), timeslice, (totalPeriod + timeslice), (totalDeadline + timeslice), defaultOccurrance, true));
                                 // updateSubtaskPeriod();
                             } else {
-                                subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), timeslice, 0, (totalDeadline + timeslice), defaultOccurrance, true));
+                                subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), timeslice, 0, currTask.getDeadline(), defaultOccurrance, true));
+                                // subtasks.add(new Task(String.format("t%d.%d", currTaskIndex + 1, numSubtasksPerTask.get(currTaskIndex)), timeslice, 0, (totalDeadline + timeslice), defaultOccurrance, true));
                             }
                             totalDeadline += timeslice;
                             totalPeriod += timeslice;

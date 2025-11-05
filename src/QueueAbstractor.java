@@ -120,6 +120,11 @@ public final class QueueAbstractor {
             }
         }
 
+        System.out.println("Here are all the Original Deadline Values: ");
+        for (Map.Entry<String, Double> e : originalDeadlineValues.entrySet()) {
+            System.out.println("Key: " + e.getKey() + " => Value: " + e.getValue());
+        }
+
         if (tempTasks.get(0).isSubTask()) {
             HashMap<String, Double> tempPeriodValues = tg.getOriginalPeriodValues();
             originalPeriodValues = new HashMap<>();
@@ -314,6 +319,18 @@ public final class QueueAbstractor {
    
     }
 
+    public void updateConcreteQueueDeadlines(String task) {
+        //We pass in the TaskLabel
+        //Iterate over all tasks in the Concrete Queue, and update their deadlines to the right value
+
+        for (int i = 0; i < concreteTaskQueue.size(); i++) {
+            Task currTask = concreteTaskQueue.get(i);
+            if (currTask.getTaskLabel().equals(task)) {
+                concreteTaskQueue.get(i).setDeadline(deadlineDifferences.get(currTask.getLabel()));
+            }
+        }
+    }
+
     public String getSubtaskLabel(String currLabel) {
         Integer dotIndex = currLabel.indexOf(".");
         if (dotIndex != -1) {
@@ -352,6 +369,11 @@ public final class QueueAbstractor {
                 if (currentTime >= curr.getPeriod()) {
                     // System.out.println("Adding the following task to the concreteQueue: " + curr.toString());
                     tempPool.remove(i);
+
+                    //Update deadline
+                    curr.setDeadline(curr.getPeriod() + originalDeadlineValues.get(curr.getLabel()));
+                    
+                    System.out.println("Deadline of task in tempPool (" + curr.getLabel() + ") updated to: " + curr.getDeadline());
                     concreteTaskQueue.add(curr);
                 }
             }
